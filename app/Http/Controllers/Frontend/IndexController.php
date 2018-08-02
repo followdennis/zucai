@@ -74,11 +74,29 @@ class IndexController extends BaseController
             'score3' => 0,
             'score4' => 0
         ];
+        //求胜平负所占比重
+        $win_num = 0;
+        $draw_num = 0;
+        $fail_num = 0;
+        $score_num = 0;
         foreach($data as $k => $item){
             $vest += 10; //投入的钱
             if($item->hope == 1){
                 $hope_number++;//符合预期的数量统计
                 $repay += $item->final_rate * 10; //获奖总额
+            }
+            //总进球数统计
+            if($item->host_team_score != 10){
+                $score_num = $score_num + $item->host_team_score + $item->guest_team_score;
+            }
+
+            //胜平负数量统计
+            if($item->match_result == 1){
+                $win_num++;
+            }else if($item->match_result == 2){
+                $draw_num++;
+            }else if($item->match_result == 3){
+                $fail_num++;
             }
             //进球数的回报率
             if($item->total == 0){
@@ -104,13 +122,22 @@ class IndexController extends BaseController
         $score_feedback['score4Rate'] = sprintf('%.2f',$score_feedback['score4']/$vest)*100 .'%';
         $hope_rate = sprintf('%.2f',$hope_number/($k + 1))*100;
         $feedback = sprintf('%.2f',($repay/$vest))*100;
+        $win_rate = sprintf('%.2f',($win_num/($k+1)))*100;
+        $draw_rate = sprintf('%.2f',($draw_num/($k+1)))*100;
+        $fail_rate = sprintf('%.2f',($fail_num/($k+1)))*100;
+        $score_num_rate = sprintf('%.2f',($score_num/($k+1)));
         return response()->json([
             'hopeRate'=>$hope_rate .'%',
             'number' => $k+1, //统计的总数
             'vestTotal' => sprintf('%.2f',$vest),
             'repayTotal' => sprintf('%.2f',$repay),
             'feedback' =>$feedback.'%',
-            'scoreFeedback' => $score_feedback
+            'scoreFeedback' => $score_feedback,
+            'winRate' => $win_rate .'%',
+            'drawRate' => $draw_rate .'%',
+            'failRate' => $fail_rate .'%',
+            'scoreNum' => $score_num,
+            'scoreNumRate' => $score_num_rate
         ]);
     }
 }

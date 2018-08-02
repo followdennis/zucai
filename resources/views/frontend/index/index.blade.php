@@ -60,6 +60,10 @@
                 $("#total_score_feedback").find('td:eq(1)').find('span').text(data.scoreFeedback.score1Rate);
                 $("#total_score_feedback").find('td:eq(2)').find('span').text(data.scoreFeedback.score2Rate);
                 $("#total_score_feedback").find('td:eq(3)').find('span').text(data.scoreFeedback.score3Rate);
+                $("#final_expect_rate").find('td:eq(0)').find('span').text(data.winRate);
+                $("#final_expect_rate").find('td:eq(1)').find('span').text(data.drawRate);
+                $("#final_expect_rate").find('td:eq(2)').find('span').text(data.failRate);
+                $("#final_expect_rate").find('td:eq(3)').find('span').text(data.scoreNumRate);
                 console.log(data.scoreFeedback);
             }
         });
@@ -170,6 +174,16 @@
                         <td><span class="text-danger font-weight-bold"></span></td>
                         <th>总进球 3</th>
                         <td><span class="text-danger font-weight-bold"></span></td>
+                    </tr>
+                    <tr id="final_expect_rate">
+                        <th>胜比率</th>
+                        <td><span class="text-primary font-weight-bold"></span></td>
+                        <th>平比率</th>
+                        <td><span class="text-primary font-weight-bold"></span></td>
+                        <th>负比率</th>
+                        <td><span class="text-primary font-weight-bold"></span></td>
+                        <th>平均进球数</th>
+                        <td><span class="text-primary font-weight-bold"></span></td>
                     </tr>
                     </tbody>
                 </table>
