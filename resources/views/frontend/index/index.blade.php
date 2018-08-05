@@ -1,8 +1,37 @@
 @extends('frontend.layouts.main')
 @section('STYLE')
-    <link rel="stylesheet" href="{{ asset('vendor/font-awesome/css/font-awesome.min.css') }}">
+<link rel="stylesheet" href="{{ asset('vendor/font-awesome/css/font-awesome.min.css') }}">
+<style>
+    .betting-btn{
+        position: fixed;
+        bottom: 50px;
+        right: 50px;
+        display:none;
+    }
+    .calculate-result{
+        position: fixed;
+        bottom: 90px;
+        right: 50px;
+        display:none;
+    }
+    .clear-select{
+        position:fixed;
+        bottom:50px;
+        left:10px;
+        display:none;
+        z-index:1
+    }
+</style>
 @endsection
 @section('SCRIPT')
+<script>
+    //一般直接写在一个js文件中
+    layui.use(['layer', 'form'], function(){
+        var layer = layui.layer
+            ,form = layui.form;
+
+    });
+</script>
 <script>
     $(function(){
         //让球部分隐藏
@@ -28,8 +57,67 @@
             $("#form1 select").each(function(){
                 $(this).attr('value','0');
             })
+        });
+        //选中单元格
+        $("#match-list-table tbody th").click(function(){
+           var checkbox = $(this).find('input[type=checkbox]');
+            if(checkbox.is(":checked") == true){
+               checkbox.attr("checked",false);
+            }else{
+                checkbox.attr("checked",true);
+            }
+            var len = $("#match-list-table input[type='checkbox']:checked").length;
+            if( len < 2){
+                $(".betting-btn").css('display','none');
+                $(".calculate-result").css('display','none');
+            } else if(  len < 9){
+                $(".betting-btn").css('display','block');
+                $('.calculate-result').css('display','block');
+            }else{
+                $(".betting-btn").css('display','none');
+                $('.calculate-result').css('display','none');
+                  alert('所选比赛超过8个');
+            }
+            $(".clear-select").find('button span').text('(' + len + ')');//记录选中了多少
+            //清除功能
+            if( len > 0){
+                $('.clear-select').css('display','block');
+            }else{
+                $('.clear-select').css('display','none');
+            }
+        });
+        $('.clear-select').click(function(){
+
+            $("#match-list-table input[type='checkbox']:checked").each(function(){
+                $(this).attr('checked',false);
+            });
+            $(".clear-select").css('display','none');
+        })
+        //计算 赔率和回报
+        $(".calculate-result").click(function(){
+            var total = 1;
+            $("#match-list-table input[type='checkbox']:checked").each(function(){
+               var rate = $(this).parent().parent().find('td:eq(8)').find('span').data('rate');
+               var rate = parseFloat(rate);
+               total *= rate;
+            });
+            var money = (total * 20).toFixed(2);
+            var html = '<div style="margin:10px auto;width:350px;">';
+            html += '<span>投注金额: 20 元<span><br/>';
+            html += '总赔率 :<font color="red">' + total.toFixed(2) + '</font><br/>';
+            html += '回报总额:' + '<font color="red">' +money + "</font><br/>";
+            html += '</div>';
+            layer.open({
+                type: 1,
+                skin: 'layui-layer-rim', //加上边框
+                area: ['420px', '240px'], //宽高
+                content: html
+            });
         })
 
+        $(".betting-btn").click(function(){
+
+        })
         //获取统计数据
         calculate();
     })
@@ -60,10 +148,16 @@
                 $("#total_score_feedback").find('td:eq(1)').find('span').text(data.scoreFeedback.score1Rate);
                 $("#total_score_feedback").find('td:eq(2)').find('span').text(data.scoreFeedback.score2Rate);
                 $("#total_score_feedback").find('td:eq(3)').find('span').text(data.scoreFeedback.score3Rate);
+                $("#total_score_feedback").next().find('td:eq(0)').find('span').text(data.scoreFeedback.score4Rate);
+                $("#total_score_feedback").next().find('td:eq(1)').find('span').text(data.scoreFeedback.score5Rate);
+                $("#total_score_feedback").next().find('td:eq(2)').find('span').text(data.scoreFeedback.score6Rate);
+                $("#total_score_feedback").next().find('td:eq(3)').find('span').text(data.scoreFeedback.score7Rate);
+
                 $("#final_expect_rate").find('td:eq(0)').find('span').text(data.winRate);
                 $("#final_expect_rate").find('td:eq(1)').find('span').text(data.drawRate);
                 $("#final_expect_rate").find('td:eq(2)').find('span').text(data.failRate);
                 $("#final_expect_rate").find('td:eq(3)').find('span').text(data.scoreNumRate);
+
                 console.log(data.scoreFeedback);
             }
         });
@@ -148,7 +242,7 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <table class="table table-bordered  table-hover table-sm text-center">
+                <table class="table table-bordered  table-hover table-sm text-center" >
                     <thead class="bg-info text-light text-center">
                     <tr>
                         <th colspan="8">数据统计分析</th>
@@ -175,6 +269,16 @@
                         <th>总进球 3</th>
                         <td><span class="text-danger font-weight-bold"></span></td>
                     </tr>
+                    <tr>
+                        <th>总进球 4</th>
+                        <td><span class="text-danger font-weight-bold"></span></td>
+                        <th>总进球 5</th>
+                        <td><span class="text-danger font-weight-bold"></span></td>
+                        <th>总进球 6</th>
+                        <td><span class="text-danger font-weight-bold"></span></td>
+                        <th>总进球 7</th>
+                        <td><span class="text-danger font-weight-bold"></span></td>
+                    </tr>
                     <tr id="final_expect_rate">
                         <th>胜比率</th>
                         <td><span class="text-primary font-weight-bold"></span></td>
@@ -191,10 +295,19 @@
         </div>
     </div>
 </div>
+<div class="clear-select">
+    <button class="btn btn-info btn-md">清空<span></span></button>
+</div>
+<div class="calculate-result">
+    <button class="btn btn-info btn-md">计算</button>
+</div>
+<div class="betting-btn">
+    <button class="btn btn-primary btn-md">投注</button>
+</div>
 <div class="row">
     <div class="col-sm-1"></div>
     <div class="col-sm-10" style="margin-top:15px;">
-        <table class="table table-bordered  table-hover table-sm text-center" border="1">
+        <table class="table table-bordered  table-hover table-sm text-center" border="1" id="match-list-table">
             <thead class="bg-secondary text-light text-center">
             <tr>
                 <th scope="col" >序号</th>
@@ -220,9 +333,9 @@
             <tbody>
             @foreach($list as $k => $item)
             <tr>
-                <th scope="row" rowspan="2">
+                <th scope="row" rowspan="2" >
                     {{ $k+1 }}
-                    <input type="checkbox" name="check[]" value="{{ $item->id }}" aria-label="Checkbox for following text input">
+                    <input type="checkbox" name="check[]" value="{{ $item->id }}" aria-label="Checkbox for following text input" >
                 </th>
                 <td rowspan="2">{{ $item->match_number }}</td>
                 <td rowspan="2">{{ $item->match_time }}</td>
@@ -257,11 +370,11 @@
                 <td class="small"  style="background-color:cornsilk">
 
                         @if($item->match_result == 1)
-                            <span class="text-danger">胜</span>({{ $item->final_rate }})
+                            <span class="text-danger" data-rate="{{ $item->final_rate }}">胜</span>({{ $item->final_rate }})
                         @elseif($item->match_result == 2)
-                            <span class="text-primary">平</span>({{ $item->final_rate }})
+                            <span class="text-primary" data-rate="{{ $item->final_rate }}">平</span>({{ $item->final_rate }})
                         @elseif($item->match_result == 3)
-                            <span class="text-success">负</span>({{ $item->final_rate }})
+                            <span class="text-success" data-rate="{{ $item->final_rate }}">负</span>({{ $item->final_rate }})
                         @endif
 
                 </td>

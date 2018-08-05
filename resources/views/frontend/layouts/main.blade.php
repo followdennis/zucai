@@ -9,6 +9,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('vendor/layui/layui/css/layui.css') }}">
+
     @yield('STYLE')
 </head>
 <body>
@@ -17,6 +19,7 @@
 </div>
 <!-- Scripts -->
 <script src="{{ asset('js/app.js') }}"></script>
+<script src="{{ asset('vendor/layui/layui/layui.js') }}"></script>
 @yield('SCRIPT')
 </body>
 </html>

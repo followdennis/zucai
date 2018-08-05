@@ -45,6 +45,9 @@ class Test extends Command
 
     }
 
+    public function crawler(){
+
+    }
     /**
      * 计算大比分
      */

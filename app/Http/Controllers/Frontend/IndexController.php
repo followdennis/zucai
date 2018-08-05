@@ -72,7 +72,10 @@ class IndexController extends BaseController
             'score1' => 0,
             'score2' => 0,
             'score3' => 0,
-            'score4' => 0
+            'score4' => 0,
+            'score5' => 0,
+            'score6' => 0,
+            'score7' => 0,
         ];
         //求胜平负所占比重
         $win_num = 0;
@@ -114,12 +117,24 @@ class IndexController extends BaseController
             if($item->total == 4){
                 $score_feedback['score4'] += $item->total_rate * 10;
             }
+            if($item->total == 5){
+                $score_feedback['score5'] += $item->total_rate * 10;
+            }
+            if($item->total == 6){
+                $score_feedback['score6'] += $item->total_rate * 10;
+            }
+            if($item->total == 7){
+                $score_feedback['score7'] += $item->total_rate * 10;
+            }
         }
         $score_feedback['score0Rate'] = round($score_feedback['score0']/$vest * 100,2) .'%';
         $score_feedback['score1Rate'] = sprintf('%.2f',$score_feedback['score1']/$vest)*100 .'%';
         $score_feedback['score2Rate'] = sprintf('%.2f',$score_feedback['score2']/$vest)*100 .'%';
         $score_feedback['score3Rate'] = sprintf('%.2f',$score_feedback['score3']/$vest)*100 .'%';
         $score_feedback['score4Rate'] = sprintf('%.2f',$score_feedback['score4']/$vest)*100 .'%';
+        $score_feedback['score5Rate'] = sprintf('%.2f',$score_feedback['score5']/$vest)*100 .'%';
+        $score_feedback['score6Rate'] = sprintf('%.2f',$score_feedback['score6']/$vest)*100 .'%';
+        $score_feedback['score7Rate'] = sprintf('%.2f',$score_feedback['score7']/$vest)*100 .'%';
         $hope_rate = sprintf('%.2f',$hope_number/($k + 1))*100;
         $feedback = sprintf('%.2f',($repay/$vest))*100;
         $win_rate = sprintf('%.2f',($win_num/($k+1)))*100;
