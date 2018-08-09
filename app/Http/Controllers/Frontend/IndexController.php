@@ -155,4 +155,8 @@ class IndexController extends BaseController
             'scoreNumRate' => $score_num_rate
         ]);
     }
+
+    public function betting(){
+        return view('frontend.index.betting');
+    }
 }

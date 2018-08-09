@@ -21,6 +21,18 @@
         display:none;
         z-index:1
     }
+    .rate_line1 span{
+        cursor:pointer;
+    }
+    .rate_line2 span{
+        cursor:pointer;
+    }
+   td.rate_line1{
+       height:37px;
+   }
+    td.rate_line2{
+        height:37px;
+    }
 </style>
 @endsection
 @section('SCRIPT')
@@ -116,8 +128,62 @@
         })
 
         $(".betting-btn").click(function(){
+            var url = '/betting';
+            layer.open({
+                type:2,
+                title:'投注',
+                skin:'layui-layer-rim',
+                area:['800px','580px'],
+                btn: ['确定', '取消'],
+                yes:function(index,layero){
+                    alert('ok');
+                },
+                content:url,
+                success:function(layero,index){
+                    var ids_arr = {};
+                    $("input[type='checkbox']:checked").each(function(){
+                        var item_id = $(this).val();
+                        var line = $(this).parent().parent().parent().find('tr[item-id="'+ item_id +'"]').find('td[class^="rate_line"] span[class]');
+                        var rate = line.text(); //获取赔率
+                        var res =  line.attr('res'); //获取胜平负
+                        var is_give_score = parseInt(line.parent().attr('class').match(/\d+/)) -1; //0 非让球  1 让球
 
-        })
+                    });
+
+                }
+            });
+        });
+        $(".rate_line1 span").click(function(){
+            var finish = $(this).parent('td').data('finish');
+            if(finish == 0){
+                var style = $(this).attr('class');
+                if(style == undefined){
+                    $(this).addClass('btn btn-info btn-sm');
+                    $(this).siblings().removeAttr('class');
+                    $(this).parent().parent().next().find('td.rate_line2 span').removeAttr('class');
+                }else{
+                    $(this).removeAttr('class');
+                }
+            }else{
+                alert('该比赛已经结束，不可投注');
+            }
+        });
+        //让球投注
+        $(".rate_line2 span").click(function(){
+            var finish = $(this).parent('td').data('finish');
+            if(finish == 0){
+                var style = $(this).attr('class');
+                if(style == undefined){
+                    $(this).addClass('btn btn-success btn-sm');
+                    $(this).siblings().removeAttr('class');
+                    $(this).parent().parent().prev().find('td.rate_line1 span').removeAttr('class');
+                }else{
+                    $(this).removeAttr('class');
+                }
+            }else{
+                alert('该比赛已经结束,不可投注');
+            }
+        });
         //获取统计数据
         calculate();
     })
@@ -130,7 +196,7 @@
             'matchStatus':$("select[name='matchStatus'] option:selected").val(),
             'totalScore':$("select[name='totalScore'] option:selected").val(),
             'pageSize':$("select[name='pageSize'] option:selected").val(),
-        }
+        };
         $.ajaxSetup({
             headers: { 'X-CSRF-TOKEN' : '{{ csrf_token() }}' }
         });
@@ -332,7 +398,7 @@
             </thead>
             <tbody>
             @foreach($list as $k => $item)
-            <tr>
+            <tr item-id="{{ $item->id }}">
                 <th scope="row" rowspan="2" >
                     {{ $k+1 }}
                     <input type="checkbox" name="check[]" value="{{ $item->id }}" aria-label="Checkbox for following text input" >
@@ -362,10 +428,10 @@
                     {{ $item->guest_team_rank }}
                 </td>
                 <td>{{ $item->give_score_1 }}</td>
-                <td class="rate_line1" style="background-color:cornsilk">
-                    <span class="@if($item->match_result == 1){{ $item->color1 }} font-weight-bold @endif ">{{ $item->win_rate_1 }}</span>&nbsp;
-                    <span class="@if($item->match_result == 2) {{ $item->color1 }} font-weight-bold  @endif ">{{ $item->draw_rate_1 }}</span>&nbsp;
-                    <span class="@if($item->match_result == 3) {{ $item->color1 }} font-weight-bold @endif ">{{ $item->fail_rate_1 }}</span>
+                <td class="rate_line1" data-finish="{{ $item->status }}" style="background-color:cornsilk">
+                    <span @if($item->match_result == 1)class="{{ $item->color1 }} font-weight-bold"  @endif  res="1">{{ $item->win_rate_1 }}</span>&nbsp;
+                    <span @if($item->match_result == 2)class=" {{ $item->color1 }} font-weight-bold" @endif  res="2">{{ $item->draw_rate_1 }}</span>&nbsp;
+                    <span @if($item->match_result == 3)class=" {{ $item->color1 }} font-weight-bold" @endif res="3">{{ $item->fail_rate_1 }}</span>
                 </td>
                 <td class="small"  style="background-color:cornsilk">
 
@@ -407,12 +473,12 @@
                     <button type="button" class="btn btn-danger btn-sm">分析</button>
                 </td>
             </tr>
-            <tr>
+            <tr item-id="{{ $item->id }}">
                 <td>{{ $item->give_score_2 }}</td>
-                <td class="rate_line2">
-                    <span class="@if($item->match_give_score_result == 1) {{ $item->color2 }}  font-weight-bold  @endif">{{ $item->win_rate_2 }}</span>&nbsp;
-                    <span class="@if($item->match_give_score_result == 2){{ $item->color2 }} font-weight-bold @endif">{{ $item->draw_rate_2 }}</span>
-                    <span class="@if($item->match_give_score_result == 3) {{ $item->color2 }} font-weight-bold @endif">{{ $item->fail_rate_2 }}</span>
+                <td class="rate_line2"  data-finish="{{ $item->status }}">
+                    <span @if($item->match_give_score_result == 1) class="{{ $item->color2 }}  font-weight-bold " @endif>{{ $item->win_rate_2 }}</span>&nbsp;
+                    <span @if($item->match_give_score_result == 2)class="{{ $item->color2 }} font-weight-bold" @endif>{{ $item->draw_rate_2 }}</span>
+                    <span @if($item->match_give_score_result == 3)class="{{ $item->color2 }} font-weight-bold" @endif>{{ $item->fail_rate_2 }}</span>
                 </td>
                 <td>
                     @if($item->match_give_score_result == 1)

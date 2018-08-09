@@ -13,8 +13,13 @@
 
 Route::get('spider',['uses'=>'TestController@index']);
 
-Route::get('/',['uses'=>'Frontend\IndexController@index']);
-Route::get('index',['uses'=>'Frontend\IndexController@index']);
-Route::post('calculate',['uses'=>'Frontend\IndexController@calculate']);
+//前台路由
+Route::namespace('Frontend')->group(function(){
+    Route::get('/',['uses'=>'IndexController@index']);
+    Route::get('index',['uses'=>'IndexController@index']);
+    Route::post('calculate',['uses'=>'IndexController@calculate']);//数据统计
+    Route::get('betting',['uses'=>'IndexController@betting']);
+});
+
 
 Route::get('number',['uses'=>'TestController@getNumber']);

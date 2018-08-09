@@ -68,16 +68,16 @@ class Caipiao163 extends Command
                 'inf',
             ],
             'host_team_name'=>[
-                'em.hostTeam b',
-                'text'
+                'em.hostTeam',
+                'title'
             ],
             'host_team_rank'=>[
                 'em.hostTeam i',
                 'text'
             ],
             'guest_team_name'=>[
-                'em.guestTeam b',
-                'text'
+                'em.guestTeam',
+                'title'
             ],
             'guest_team_rank'=>[
                 'em.guestTeam i',

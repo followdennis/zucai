@@ -73,6 +73,7 @@ class Caipiao163Process extends Command
             $url = $this->url.$date;
 
             $data = $this->all($url);
+
             foreach($data['team'] as $k => $team){
 
                 $source_item = SourceWangyiCaipiao::where('status',0)
@@ -101,8 +102,6 @@ class Caipiao163Process extends Command
                         $source_item->save();
                         $this->info('success--'.$k);
                     }
-                } else {
-                   echo 'e-'.$k;
                 }
 
             }
