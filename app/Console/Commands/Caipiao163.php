@@ -147,6 +147,11 @@ class Caipiao163 extends Command
                         return false; //赛前五分钟截止
                     }
                     $x['betting_date'] = betting_day($x['match_time']);//获取投注日期
+                    if($x['betting_date'] == '2018-08-13 00:00:00'){
+
+                    }else{
+
+                    }
                 }
                 if(isset($x['give_score_1'])){
                     $x['give_score_1'] = str_replace('+','',$x['give_score_1']);

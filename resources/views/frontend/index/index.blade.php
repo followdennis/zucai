@@ -128,6 +128,12 @@
         })
 
         $(".betting-btn").click(function(){
+            var len = $("input[type='checkbox']:checked").parent().parent().find('td.rate_line1[data-finish="0"]').length;
+            //选中的未开始比赛的数量
+            if(len < 2){
+                alert('未完赛的比赛数量不能小于两个');
+                return false;
+            }
             var url = '/betting';
             layer.open({
                 type:2,
@@ -141,14 +147,64 @@
                 content:url,
                 success:function(layero,index){
                     var ids_arr = {};
-                    $("input[type='checkbox']:checked").each(function(){
+                    var base_money = 20;
+                    var total_rate = 1;
+                    var payback = 0;
+                    var body = layer.getChildFrame('body', index);
+                    $("input[type='checkbox']:checked").each(function(i,obj){
+
                         var item_id = $(this).val();
-                        var line = $(this).parent().parent().parent().find('tr[item-id="'+ item_id +'"]').find('td[class^="rate_line"] span[class]');
+                        var tr = $(this).parent().parent();
+                        var line = tr.parent().find('tr[item-id="'+ item_id +'"]').find('td[class^="rate_line"] span[class]');
                         var rate = line.text(); //获取赔率
                         var res =  line.attr('res'); //获取胜平负
-                        var is_give_score = parseInt(line.parent().attr('class').match(/\d+/)) -1; //0 非让球  1 让球
+                        var line_class = line.parent().attr('class');
+                        var line_num = tr.find('th').text();
+                        if(line_class == undefined){
+                            layer.alert('序号为'+ line_num + '的比赛未押注比赛结果，请选好再提交');
+                            layer.close(index);
+                            return false;
+                        }
+                        var is_give_score = parseInt(line_class.match(/\d+/)) -1; //0 非让球  1 让球
+                        var finish_status = line.parent().data('finish');
 
+                        if(finish_status == 0){
+                            var match_info = tr.find('td:eq(2) span').text() + tr.find('td:eq(0)').text();
+                            var match_time = tr.find('td:eq(1)').text();
+                            var give_score = parseInt(line.parent().prev('td').text());
+                            var host_team = tr.find('td:eq(3)').html().trim();
+                            var guest_team = tr.find('td:eq(5)').html().trim();
+                            var host_team_name = host_team.substring(0,host_team.indexOf('<br>'));
+                            var guest_team_name = guest_team.substring(0,guest_team.indexOf('<br>'));
+                            var index_i = i + 1;
+                            var res_name = '';
+                            if(res == 1){
+                                res_name = '胜';
+                            }else if(res == 2){
+                                res_name = '平';
+                            }else if(res == 3){
+                                res_name = '负';
+                            }
+                            total_rate *= parseFloat(rate);
+
+                            var html = '<tr item-id="'+ item_id +'">' +
+                                '<td>' + index_i + '</td>' +
+                                '<td>' + match_info +  '</td>' +
+                                '<td>' + host_team_name + '</td>' +
+                                '<td>'+ guest_team_name +'</td>' +
+                                '<td>'+ give_score +'</td>' +
+                                '<td data-betting="'+ res +'">' + res_name + '(<span>'+ rate +'<span>)</td>' +
+                                '<td>'+ match_time +'</td>'+
+                                '<td onclick="del_item(this)"><font color="red"><i class="fa fa-close" aria-hidden="true"></i></font></td>'+
+                                '</tr>';
+                            body.find('#select_match tbody').append(html);
+                        }
                     });
+                    payback = (total_rate * 20).toFixed(2);
+                    total_rate = total_rate.toFixed(2);
+                    body.find("#base_money").val(base_money);
+                    body.find("#total_rate").val(total_rate);
+                    body.find("#payback").val(payback);
 
                 }
             });
@@ -165,7 +221,7 @@
                     $(this).removeAttr('class');
                 }
             }else{
-                alert('该比赛已经结束，不可投注');
+                console.log('该比赛已经结束，不可投注');
             }
         });
         //让球投注
@@ -184,6 +240,7 @@
                 alert('该比赛已经结束,不可投注');
             }
         });
+
         //获取统计数据
         calculate();
     })
@@ -476,9 +533,9 @@
             <tr item-id="{{ $item->id }}">
                 <td>{{ $item->give_score_2 }}</td>
                 <td class="rate_line2"  data-finish="{{ $item->status }}">
-                    <span @if($item->match_give_score_result == 1) class="{{ $item->color2 }}  font-weight-bold " @endif>{{ $item->win_rate_2 }}</span>&nbsp;
-                    <span @if($item->match_give_score_result == 2)class="{{ $item->color2 }} font-weight-bold" @endif>{{ $item->draw_rate_2 }}</span>
-                    <span @if($item->match_give_score_result == 3)class="{{ $item->color2 }} font-weight-bold" @endif>{{ $item->fail_rate_2 }}</span>
+                    <span @if($item->match_give_score_result == 1) class="{{ $item->color2 }}  font-weight-bold " @endif res="1">{{ $item->win_rate_2 }}</span>&nbsp;
+                    <span @if($item->match_give_score_result == 2)class="{{ $item->color2 }} font-weight-bold" @endif res="2">{{ $item->draw_rate_2 }}</span>
+                    <span @if($item->match_give_score_result == 3)class="{{ $item->color2 }} font-weight-bold" @endif res="3">{{ $item->fail_rate_2 }}</span>
                 </td>
                 <td>
                     @if($item->match_give_score_result == 1)
