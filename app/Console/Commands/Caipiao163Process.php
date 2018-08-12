@@ -32,13 +32,15 @@ class Caipiao163Process extends Command
         '胜' => 1,
         '平' => 2,
         '负' => 3,
-        '其他' => 0
+        '其他' => 0,
+        '-' => 4   //表示 没有非让球的选项
     ];
     protected $give_win = [
         '让球胜' => 1,
         '让球平' => 2,
         '让球负' => 3,
-        '其他' => 0
+        '其他' => 0 ,
+        '-' => 4
     ];
     /**
      * Create a new command instance.
@@ -85,9 +87,15 @@ class Caipiao163Process extends Command
                     ])
                     ->first();
                 if(!empty($source_item)){
-                    if(preg_match('/-/', $data['win'][$k]['win'])){
+                    if(preg_match('/-/', $data['total_score'][$k]['total'])){
                         $this->info($team['competition_name'] . $team['match_number'] .'没出结果');
                     }else{
+                        if(preg_match('/-/',$data['win'][$k]['win'])){
+                            $data['win'][$k]['win_rate'] = 0;
+                        }
+                        if(preg_match('/-/',$data['give_score'][$k]['give_score_win'])){
+                            $data['give_score'][$k]['give_score_rate'] = 0;
+                        }
                         $source_item->status = 2;
                         $source_item->host_team_score = $data['result'][$k]['host_score'];
                         $source_item->guest_team_score = $data['result'][$k]['guest_score'];

@@ -159,4 +159,17 @@ class IndexController extends BaseController
     public function betting(){
         return view('frontend.index.betting');
     }
+
+    /**
+     * @param Request $request
+     * 投注数据保存
+     */
+    public function betting_save(Request $request){
+        $json = $request->get('data');
+        $data = json_decode($json,true);
+        $total = $data['total'];
+        $list = $data['list'];
+
+        return response()->json(['code'=>0,'msg'=>'ok','data'=>$data]);
+    }
 }

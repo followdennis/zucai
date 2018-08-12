@@ -142,7 +142,35 @@
                 area:['800px','580px'],
                 btn: ['确定', '取消'],
                 yes:function(index,layero){
-                    alert('ok');
+                    var childPage = layer.getChildFrame('body');
+                    var len = childPage.find("#select_match tbody tr").length;
+                    if(len < 2){
+                        layer.alert('需要至少两条数据才可以提交哦');
+                        return false;
+                    }
+                    var data = {};
+                    data['list'] = [];
+                    var num = 0;
+                    childPage.find("#select_match tbody tr").each(function(i,item){
+                        var item_id = $(this).attr('item-id');
+                        var give_score = $(this).find('td:eq(4)').text();
+                        var res = $(this).find('td:eq(5)').data('betting');
+                        var rate = $(this).find('td:eq(5) span').text();
+                        var match_time = $(this).find('td:eq(6)').text();
+                        data['list'].push({itemId:item_id,giveScore:give_score,res:res,rate:rate,matchTime:match_time});
+                        num = i+1;
+                    });
+                    data['total'] = num;
+                    data = JSON.stringify(data);
+                    $.ajax({
+                        url:'/betting_save',
+                        type:'get',
+                        dataType:'json',
+                        data:{data:data},
+                        success:function(data){
+                            console.log(data);
+                        }
+                    });
                 },
                 content:url,
                 success:function(layero,index){
@@ -193,7 +221,7 @@
                                 '<td>' + host_team_name + '</td>' +
                                 '<td>'+ guest_team_name +'</td>' +
                                 '<td>'+ give_score +'</td>' +
-                                '<td data-betting="'+ res +'">' + res_name + '(<span>'+ rate +'<span>)</td>' +
+                                '<td data-betting="'+ res +'">' + res_name + '(<span>'+ rate +'</span>)</td>' +
                                 '<td>'+ match_time +'</td>'+
                                 '<td onclick="del_item(this)"><font color="red"><i class="fa fa-close" aria-hidden="true"></i></font></td>'+
                                 '</tr>';
@@ -237,7 +265,7 @@
                     $(this).removeAttr('class');
                 }
             }else{
-                alert('该比赛已经结束,不可投注');
+
             }
         });
 
@@ -450,7 +478,6 @@
                 <th scope="col">状态</th>
                 <th scope="col">推荐/指数</th>
                 <th scope="col">操作</th>
-
             </tr>
             </thead>
             <tbody>
