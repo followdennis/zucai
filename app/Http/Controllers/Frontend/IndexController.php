@@ -2,17 +2,25 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Models\AnalogueInjection;
+use App\Models\AnalogueInjectionGroup;
 use App\Models\SourceWangyiCaipiao;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class IndexController extends BaseController
 {
     //
     protected $sourceModel;
-    public function __construct(SourceWangyiCaipiao $sourceWangyiCaipiao)
+    protected $groupModel;
+    protected $analogueModel;
+    public function __construct(SourceWangyiCaipiao $sourceWangyiCaipiao,AnalogueInjectionGroup $group,AnalogueInjection $model)
     {
         $this->sourceModel = $sourceWangyiCaipiao;
+        $this->groupModel = $group;
+        $this->analogueModel = $model;
     }
 
     public function index(Request $request){
@@ -167,9 +175,50 @@ class IndexController extends BaseController
     public function betting_save(Request $request){
         $json = $request->get('data');
         $data = json_decode($json,true);
-        $total = $data['total'];
+        $total = $data['total']; //总比赛数量
         $list = $data['list'];
-
-        return response()->json(['code'=>0,'msg'=>'ok','data'=>$data]);
+        $sumRate = $data['sumRate'];
+        $max_end_time = Carbon::parse($data['maxTime'])->addHours(2);//最大的结束时间
+        $today = Carbon::now()->startOfDay();
+        $group_data = [
+            'account_id'=>0,
+            'betting_date'=> $today,
+            'max_end_time'=>$max_end_time,
+            'is_finish'=>0,
+            'match_num' => $total,
+            'betting_money' => 20,
+            'sum_rate' => $sumRate,
+            'money' => sprintf('%.2f',20*$sumRate),
+            'created_at' => Carbon::now()->toDateTimeString(),
+            'updated_at'=>Carbon::now()->toDateTimeString()
+        ];
+        DB::beginTransaction();
+        $group_id = $this->groupModel->insertData($group_data);
+        $list_data = [];
+        foreach($list as $k => $item){
+            array_push($list_data,[
+                'account_id'=>0,
+                'match_id'=>$item['itemId'],
+                'give_score'=>$item['giveScore'],
+                'betting_result'=>$item['res'],
+                'rate' => $item['rate'],
+                'total'=>$item['total'],
+                'group_id'=>$group_id,
+                'is_finish' => 0,
+                'created_at'=>Carbon::now()->toDateTimeString(),
+                'updated_at' => Carbon::now()->toDateTimeString()
+            ]);
+        }
+        $insert_status = $this->analogueModel->insertData($list_data);
+        if($group_id && $insert_status){
+            DB::commit();
+            $code = 0;
+            $msg = '投注成功';
+        }else{
+            $code = -1;
+            $msg = '投注失败';
+            DB::rollBack();
+        }
+        return response()->json(['code'=>$code,'msg'=>$msg]);
     }
 }

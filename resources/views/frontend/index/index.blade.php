@@ -151,16 +151,25 @@
                     var data = {};
                     data['list'] = [];
                     var num = 0;
+                    var sum_rate = 1;  //总赔率
+                    var max_time = '2000-01-01 00:00:00'; //求最大的时间
                     childPage.find("#select_match tbody tr").each(function(i,item){
                         var item_id = $(this).attr('item-id');
                         var give_score = $(this).find('td:eq(4)').text();
                         var res = $(this).find('td:eq(5)').data('betting');
                         var rate = $(this).find('td:eq(5) span').text();
-                        var match_time = $(this).find('td:eq(6)').text();
-                        data['list'].push({itemId:item_id,giveScore:give_score,res:res,rate:rate,matchTime:match_time});
+                        var total = $(this).find('td:eq(6)').find('select option:selected').val();
+                        var match_time = $(this).find('td:eq(7)').text();
+                        sum_rate *= parseFloat(rate);
+                        if(match_time > max_time){
+                            max_time = match_time;
+                        }
+                        data['list'].push({itemId:item_id,giveScore:give_score,res:res,rate:rate,total:total,matchTime:match_time});
                         num = i+1;
                     });
                     data['total'] = num;
+                    data['maxTime'] = max_time;
+                    data['sumRate'] = sum_rate.toFixed(2);
                     data = JSON.stringify(data);
                     $.ajax({
                         url:'/betting_save',
@@ -169,6 +178,13 @@
                         data:{data:data},
                         success:function(data){
                             console.log(data);
+                            if(data.code == 0){
+                                layer.msg(data.msg,{icon:1});
+                                layer.close(index);
+                            }else{
+                                layer.msg(data.msg,{icon:5});
+                                layer.close(index);
+                            }
                         }
                     });
                 },
@@ -222,6 +238,7 @@
                                 '<td>'+ guest_team_name +'</td>' +
                                 '<td>'+ give_score +'</td>' +
                                 '<td data-betting="'+ res +'">' + res_name + '(<span>'+ rate +'</span>)</td>' +
+                                '<td><select name="total" class="total_score"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td>'+
                                 '<td>'+ match_time +'</td>'+
                                 '<td onclick="del_item(this)"><font color="red"><i class="fa fa-close" aria-hidden="true"></i></font></td>'+
                                 '</tr>';

@@ -22,6 +22,7 @@ class CreateAnalogueInjectionGroupTable extends Migration
             $table->tinyInteger('is_correct')->default(0)->comment('是否中奖 1 是 ，0 否');
             $table->tinyInteger('match_num')->default(0)->comment('几串一');
             $table->integer('betting_money')->default(20)->comment('投注金额');
+            $table->float('sum_rate',6,2)->default(1)->comment('总的赔率');
             $table->float('money',10,2)->default(0)->comment('胜平负/让球胜平负 回报金额');
             $table->float('score_money',10,2)->default(0)->comment('总进球数回报总额');
             $table->tinyInteger('correct_num')->default(0)->comment('命中个数');

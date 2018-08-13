@@ -1,6 +1,13 @@
 @extends('frontend.layouts.common')
 @section('STYLE')
     <link rel="stylesheet" href="{{ asset('vendor/font-awesome/css/font-awesome.min.css') }}">
+    <style>
+        .total_score{
+            width: 50px;
+            line-height: 20px;
+            padding: 2px;
+        }
+    </style>
 @endsection
 @section('SCRIPT')
 <script>
@@ -50,6 +57,7 @@ function del_item(obj){
                 <th>客队</th>
                 <th>让球</th>
                 <th>结果</th>
+                <th>进球数</th>
                 <th>比赛时间</th>
                 <th>操作</th>
             </tr>
