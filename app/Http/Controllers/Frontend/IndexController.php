@@ -32,6 +32,7 @@ class IndexController extends BaseController
             'totalScore' =>'max:3',
             'pageSize'=>'max:3'
         ]);
+        $page = $request->get('page',1);
         $condition = $request->all();
         //添加分页的查询条件
         $data = $this->sourceModel->getList($condition)->appends([
@@ -52,6 +53,7 @@ class IndexController extends BaseController
             'matchStatus' =>$condition['matchStatus'] ?? 2,
             'totalScore' =>$condition['totalScore'] ?? '',
             'pageSize' =>$condition['pageSize'] ?? '',
+            'page' => $page
         ]);
     }
 

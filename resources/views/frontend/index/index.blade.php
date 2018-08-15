@@ -298,6 +298,7 @@
             'matchStatus':$("select[name='matchStatus'] option:selected").val(),
             'totalScore':$("select[name='totalScore'] option:selected").val(),
             'pageSize':$("select[name='pageSize'] option:selected").val(),
+            'page':'{{ $page }}'
         };
         $.ajaxSetup({
             headers: { 'X-CSRF-TOKEN' : '{{ csrf_token() }}' }
