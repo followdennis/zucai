@@ -42,6 +42,7 @@ class CreateSourceWangyicaipiaoTable extends Migration
             $table->tinyInteger('is_hope')->default(0)->comment('是否符合预期 0 否，1是');
             $table->smallInteger('recommend_level')->default(0)->comment('推荐程度');
             $table->tinyInteger('big_score')->default(0)->comment('大比分，主队减客队');
+            $table->timestamp('betting_date')->nullable()->comment('投注日期');
             $table->timestamps();
             $table->softDeletes();
         });
