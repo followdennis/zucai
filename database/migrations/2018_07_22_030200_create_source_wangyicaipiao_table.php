@@ -31,7 +31,7 @@ class CreateSourceWangyicaipiaoTable extends Migration
             $table->float('draw_rate_2',6,2)->default(0)->comment('平赔率');
             $table->float('fail_rate_2',6,2)->default(0)->comment('败赔率');
             $table->tinyInteger('status')->default(0)->comment('状态 0：未开赛 1：进行中 2结束');
-            $table->tinyInteger('host_team_score')->deafult(0)->comment('主队进球数');
+            $table->tinyInteger('host_team_score')->default(0)->comment('主队进球数');
             $table->tinyInteger('guest_team_score')->default(0)->comment('客队进球总数');
             $table->tinyInteger('match_result')->default(0)->comment('比赛结果 1:主队胜 2：主队平 3:主队负');
             $table->float('final_rate',6,2)->default(0)->comment('最终赔率');
