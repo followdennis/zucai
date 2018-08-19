@@ -20,6 +20,7 @@ Route::namespace('Frontend')->group(function(){
     Route::post('calculate',['uses'=>'IndexController@calculate']);//数据统计
     Route::get('betting',['uses'=>'IndexController@betting']);
     Route::get('betting_save',['uses'=>'IndexController@betting_save']);
+    Route::get('order',['uses'=>'OrderController@index']);
 });
 
 

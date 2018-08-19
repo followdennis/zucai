@@ -49,8 +49,28 @@ class SourceWangyiCaipiao extends Model
             return $item->betting_date = Carbon::parse($item->betting_date)->toDateString();
         });
     }
+
+    /**
+     * @return mixed
+     *  获取排名差
+     */
     public function getRankDiffAttribute(){
         return $this->attributes['rankDiff'] = $this->host_team_rank - $this->guest_team_rank;
+    }
+    public function getRateHopeTeamAttribute(){
+        $arr = [
+            1 => $this->win_rate_1,
+            2 => $this->draw_rate_1,
+            3 => $this->fail_rate_1
+        ];
+
+        asort($arr);
+        $res = 0;
+        foreach($arr as $k => $rate){
+            $res = $k;
+            break;
+        }
+        return $this->attributes['rateHopeTeam'] = $res;// 1 主队胜 2 平 3 负
     }
     public function getRankDiffColorAttribute(){
         $diff = abs($this->host_team_rank - $this->guest_team_rank);
@@ -149,7 +169,8 @@ class SourceWangyiCaipiao extends Model
     }
 
     /**
-     * 通过排名 和 赔率 获取是否符合预期
+     * 通过 赔率 获取是否符合预期
+     *  $status = 0 获取 是否符合预期  status = 1 获取 期望赢的队
      */
     public function hope($rank_arr,$rate_arr,$pos = 0){
 

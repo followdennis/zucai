@@ -9,6 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/global.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('vendor/layui/layui/css/layui.css') }}">
 
     @yield('STYLE')

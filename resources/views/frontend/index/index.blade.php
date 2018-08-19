@@ -514,6 +514,8 @@
                     @endphp
                     @if($rank_pos == $item->match_result && $item->hope == 1)
                     <span style="color:red;"><i class="fa fa-star" aria-hidden="true"></i></span>
+                    @elseif($rank_pos == $item->rateHopeTeam)
+                    <span><i class="fa fa-star" aria-hidden="true"></i></span>
                     @endif
                 </td>
                 <td rowspan="2" class="small">
