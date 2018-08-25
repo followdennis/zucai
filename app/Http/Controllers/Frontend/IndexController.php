@@ -30,7 +30,8 @@ class IndexController extends BaseController
             'bettingTime' => 'max:25',
             'matchStatus' => 'max:1',
             'totalScore' =>'max:3',
-            'pageSize'=>'max:3'
+            'pageSize'=>'max:3',
+            'matchResult'=>'max:3'
         ]);
         $page = $request->get('page',1);
         $condition = $request->all();
@@ -42,8 +43,10 @@ class IndexController extends BaseController
             'matchStatus' =>$condition['matchStatus'] ?? 2,
             'totalScore' =>$condition['totalScore'] ?? '',
             'pageSize' =>$condition['pageSize'] ?? '',
+            'matchResult' => $condition['matchResult'] ?? ''
         ]);
         $dateList = $this->sourceModel->getBettingDateList();
+        $competitions = $this->sourceModel->getCompetitions();
         return view('frontend.index.index',[
             'list'=>$data,
             'dateList'=>$dateList,
@@ -51,9 +54,11 @@ class IndexController extends BaseController
             'teamName' =>$condition['teamName'] ??'',
             'bettingTime' =>$condition['bettingTime'] ?? '',
             'matchStatus' =>$condition['matchStatus'] ?? 2,
+            'matchResult' => $condition['matchResult'] ?? '',
             'totalScore' =>$condition['totalScore'] ?? '',
             'pageSize' =>$condition['pageSize'] ?? '',
-            'page' => $page
+            'page' => $page,
+            'competitions'=>$competitions
         ]);
     }
 
@@ -67,7 +72,8 @@ class IndexController extends BaseController
             'bettingTime' => 'max:25',
             'matchStatus' => 'max:1',
             'totalScore' =>'max:3',
-            'pageSize'=>'max:3'
+            'pageSize'=>'max:3',
+            'matchResult'=>'max:3'
         ]);
         $condition = $request->all();
         //添加分页的查询条件
@@ -162,7 +168,8 @@ class IndexController extends BaseController
             'drawRate' => $draw_rate .'%',
             'failRate' => $fail_rate .'%',
             'scoreNum' => $score_num,
-            'scoreNumRate' => $score_num_rate
+            'scoreNumRate' => $score_num_rate,
+
         ]);
     }
 

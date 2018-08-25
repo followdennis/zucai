@@ -21,11 +21,12 @@
                     <th>赔率</th>
                     <th>总进球数</th>
                     <th>进球赔率</th>
+                    <th style="width:101px;">查看比赛</th>
                 </thead>
                 <tbody>
             @foreach($groups as $k => $group)
                         <tr class="bg-info text-white">
-                            <td colspan="9">
+                            <td colspan="10">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <span class="font-weight-bold">编号</span>
@@ -73,10 +74,11 @@
                             @endif
                             </td>
                             <td>{{ $item->match->total_rate }}</td>
+                            <td class="align-content-center"><button class="btn btn-sm btn-primary">比赛</button>&nbsp;<button class="btn btn-sm btn-info">详情</button></td>
                         </tr>
                     @endforeach
                         <tr>
-                            <td colspan="9">统计数据</td>
+                            <td colspan="10">统计数据</td>
                         </tr>
             @endforeach
                     </tbody>

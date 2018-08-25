@@ -17,7 +17,8 @@ class Kernel extends ConsoleKernel
         Commands\Caipiao163::class,//网易彩票
         Commands\Caipiao163Process::class,
         Commands\Caipiaobao::class,//彩票宝
-        Commands\Test::class
+        Commands\Test::class,
+        Commands\AoKe::class   //澳客网
     ];
 
     /**

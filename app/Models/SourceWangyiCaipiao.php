@@ -12,7 +12,7 @@ class SourceWangyiCaipiao extends Model
     use SoftDeletes;
     public $table = 'source_wangyicaipiao';
     public $guarded = [];
-    protected $appends = ['color1','color2','hope','updateDate','bigScoreColor','rankDiff','rankDiffColor'];
+    protected $appends = ['color1','color2','hope','updateDate','bigScoreColor','rankDiff','rankDiffColor','isOpposite'];
 
     public function getList($condition){
         $condition['pageSize']  = isset($condition['pageSize']) ? $condition['pageSize'] :  15;
@@ -41,6 +41,9 @@ class SourceWangyiCaipiao extends Model
             if(isset($condition['totalScore']) && $condition['totalScore'] != 8){
                 $query->where('total',$condition['totalScore']);
             }
+            if(!empty($condition['matchResult'])){
+                $query->where('match_result',$condition['matchResult']);
+            }
         })->paginate($pageSize);
         return $data;
     }
@@ -57,7 +60,41 @@ class SourceWangyiCaipiao extends Model
     public function getRankDiffAttribute(){
         return $this->attributes['rankDiff'] = $this->host_team_rank - $this->guest_team_rank;
     }
+
+    /**
+     * @return int|string
+     * 获取赔率与排名相反的数据
+     */
+    public function getIsOppositeAttribute(){
+        $rank_num = 0;
+        $rate_num = 0;
+        $rank_result = $this->host_team_rank - $this->guest_team_rank;
+
+        if($rank_result < -5 ){
+            $rank_num = 1;
+        }elseif($rank_result == 0){
+            $rank_num = 2;
+        }elseif($rank_result > 5){
+            $rank_num = 3;
+        }else{
+            $rank_num = 0;
+        }
+
+        $rate_num = $this->getHopeWinByRate();
+
+        if(($rate_num + $rank_num) == 4){
+           $is_opposite = 1;
+        }else{
+            $is_opposite = 0;
+        }
+        return $this->attributes['isOpposite'] = $is_opposite;
+    }
     public function getRateHopeTeamAttribute(){
+       $res = $this->getHopeWinByRate();
+        return $this->attributes['rateHopeTeam'] = $res;// 1 主队胜 2 平 3 负
+    }
+
+    public function getHopeWinByRate(){
         $arr = [
             1 => $this->win_rate_1,
             2 => $this->draw_rate_1,
@@ -70,8 +107,9 @@ class SourceWangyiCaipiao extends Model
             $res = $k;
             break;
         }
-        return $this->attributes['rateHopeTeam'] = $res;// 1 主队胜 2 平 3 负
+        return $res;
     }
+
     public function getRankDiffColorAttribute(){
         $diff = abs($this->host_team_rank - $this->guest_team_rank);
         if( $diff > 10){
@@ -142,6 +180,11 @@ class SourceWangyiCaipiao extends Model
         $pos = $this->match_result;
         return $this->attributes['hope'] = $this->hope($rank,$arr,$pos);
     }
+
+    public function getCompetitions(){
+        return self::groupBy('competition_name')->select('competition_name')->get();
+    }
+
     /**
      * 计算出比赛结果对应的颜色
      * @param $arr [1=>xx,2=>xx,3=>xx]

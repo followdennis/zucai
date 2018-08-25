@@ -44,6 +44,7 @@ class CreateAokeTable extends Migration
             $table->tinyInteger('give_score_result')->default(0)->comment('让球比赛结果');
             $table->tinyInteger('big_score')->default(0)->comment('大比分，比分差');
             $table->tinyInteger('recommend_level')->default(0)->comment('推荐指数 满分100');
+            $table->tinyInteger('has_history')->default(0)->comment('是否有历史进球统计');
             $table->timestamps();
             $table->softDeletes();
         });

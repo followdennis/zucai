@@ -12,6 +12,7 @@
 */
 
 Route::get('spider',['uses'=>'TestController@index']);
+Route::get('aoke',['uses'=>'TestController@aoke']);
 
 //前台路由
 Route::namespace('Frontend')->group(function(){

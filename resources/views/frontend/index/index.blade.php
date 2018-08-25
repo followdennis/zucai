@@ -298,6 +298,7 @@
             'matchStatus':$("select[name='matchStatus'] option:selected").val(),
             'totalScore':$("select[name='totalScore'] option:selected").val(),
             'pageSize':$("select[name='pageSize'] option:selected").val(),
+            'matchResult':$("select[name='matchResult'] option:selected").val(),
             'page':'{{ $page }}'
         };
         $.ajaxSetup({
@@ -351,7 +352,12 @@
                     </div>
                     <div class="form-group">
                         <label for="competition_name">比赛:</label>
-                        <input type="text" name="competitionName" @if(!empty($competitionName)) value="{{ $competitionName }}" @endif class="form-control" id="competition_name" placeholder="比赛名称">
+                        <select class="form-control" name="competitionName" id="competition_name">
+                            <option value="">请选择</option>
+                            @foreach($competitions as $v)
+                                <option value="{{ $v->competition_name }}"  @if(!empty($competitionName) && $competitionName == $v->competition_name) selected @endif >{{ $v->competition_name  }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="team_name">队伍名称:</label>
@@ -388,6 +394,15 @@
                             <option value="6" @if($totalScore == 6) selected @endif>6</option>
                             <option value="7" @if($totalScore == 7) selected @endif>7</option>
 
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleSelect4">结果</label>
+                        <select class="form-control" name="matchResult" id="exampleSelect4">
+                            <option value="">所有</option>
+                            <option value="1" @if($matchResult == 1) selected @endif>胜</option>
+                            <option value="2" @if($matchResult == 2) selected @endif>平</option>
+                            <option value="3" @if($matchResult == 3) selected @endif>负</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-xs  btn-primary">搜索</button>
@@ -462,6 +477,11 @@
                 </table>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-12">
+                注释 <i aria-hidden="true" class="fa fa-star"></i> 赔率与排名相同 <i class="fa fa-heart" aria-hidden="true"></i> 赔率与排名相反
+            </div>
+        </div>
     </div>
 </div>
 <div class="clear-select">
@@ -516,6 +536,11 @@
                     <span style="color:red;"><i class="fa fa-star" aria-hidden="true"></i></span>
                     @elseif($rank_pos == $item->rateHopeTeam)
                     <span><i class="fa fa-star" aria-hidden="true"></i></span>
+                    @endif
+                    @if($item->isOpposite && $item->match_result == 2)
+                        <font color="blue"><i class="fa fa-heart" aria-hidden="true"></i></font>
+                    @elseif($item->isOpposite)
+                        <i class="fa fa-heart-o" aria-hidden="true"></i>
                     @endif
                 </td>
                 <td rowspan="2" class="small">

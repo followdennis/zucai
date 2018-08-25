@@ -96,6 +96,22 @@ class TestController extends Controller
         echo $data->match_time;
 
     }
+    public function aoke(){
+        $client = new Client();
+        $response = $client->request('get','http://www.okooo.com/jingcai/');
+        $html =  $response->getBody();
+        $crawler = new Crawler();
+        $crawler->addHtmlContent($html);
+        $dom = $crawler->filter('div.cont');
+        foreach($dom as $node){
+            $c1 = new Crawler($node);
+
+            $content = $c1->filter('.cont_1 .riqi .time')->html();
+            echo $content;
+            die;
+        }
+
+    }
     public function hope($arr,$pos = 1){
         asort($arr);
         $i = 1;

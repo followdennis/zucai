@@ -41,6 +41,10 @@ class Test extends Command
         //
         $this->info('测试');
 //        $this->calculateScoreData();
+        $data = $this->getCompetition();
+        foreach($data as $k => $v){
+            $this->info($k .'-'.$v->competition_name );
+        }
         $this->info('结束');
 
     }
@@ -58,5 +62,12 @@ class Test extends Command
             $v->save();
             echo $k."\n";
         }
+    }
+    /**
+     * 获取比赛名称分组数据
+     */
+    public function getCompetition(){
+        $data = SourceWangyiCaipiao::groupBy('competition_name')->select('competition_name')->get();
+        return $data;
     }
 }
