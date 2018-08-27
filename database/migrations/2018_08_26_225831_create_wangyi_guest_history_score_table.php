@@ -26,6 +26,7 @@ class CreateWangyiGuestHistoryScoreTable extends Migration
             $table->timestamp('match_time')->nullable()->comment('比赛时间');
             $table->string('league_name')->nullable()->comment('联盟名称');
             $table->integer('league_id')->default(0)->comment('联盟id,冗余字段');
+            $table->tinyInteger('match_result')->default(0)->comment('比赛结果 1 胜 2 平 3 负');
             $table->timestamps();
         });
     }
