@@ -54,6 +54,9 @@ class TestController extends Controller
             echo $i."<br/>";
         }
     }
+    public function score(){
+
+    }
     public function getNumber(){
         $str = 'aaabbbv321';
         preg_match('/\d+/',$str,$out);
