@@ -91,16 +91,26 @@ class Caipiao163 extends Command
                 'span.co6_1 div.line2',
                 'html'
             ],
+            'detail_url' =>[
+                'span.co4 a',
+                'href'
+            ]
         ])->query()->getData(function($x) use($max_time,$i){
             try{
                 $crawler = new Crawler();
                 $html = $x['give_score_1'];
                 $crawler->addHtmlContent($html);
+                //如果有数据则获取 没数据 则过滤
                 if($crawler->filter('em')->count()){
                     $x['win_rate_1'] = $crawler->filter('em')->eq(1)->text();
                     $x['draw_rate_1'] = $crawler->filter('em')->eq(2)->text();
                     $x['fail_rate_1'] = $crawler->filter('em')->eq(3)->text();
                     $x['give_score_1'] = $crawler->filter('em.rq')->text();
+                    if(preg_match('/-/',$x['win_rate_1'])){
+                        $x['win_rate_1'] = 0;
+                        $x['draw_rate_1'] = 0;
+                        $x['fail_rate_1'] = 0;
+                    }
                 }else{
                     $x['win_rate_1'] = 0;
                     $x['draw_rate_1'] = 0;
@@ -111,11 +121,19 @@ class Caipiao163 extends Command
                 $crawler->clear();
                 $crawler = new Crawler();
                 $crawler->addHtmlContent($x['give_score_2']);
+                //过滤掉 值为 '-' 的数据
                 if($crawler->filter('em')->count()){
+
                     $x['win_rate_2'] = $crawler->filter('em')->eq(1)->text();
                     $x['draw_rate_2'] = $crawler->filter('em')->eq(2)->text();
                     $x['fail_rate_2'] = $crawler->filter('em')->eq(3)->text();
                     $x['give_score_2'] = $crawler->filter('em.rq')->text();
+
+                    if(preg_match('/-/',$x['win_rate_2'])){
+                        $x['win_rate_2'] = 0;
+                        $x['draw_rate_2'] = 0;
+                        $x['fail_rate_2'] = 0;
+                    }
                     $crawler->clear();
                 }else{
                     $x['win_rate_2'] = 0;
@@ -172,6 +190,7 @@ class Caipiao163 extends Command
         $data = array_filter($data->all(),function($item){
             return empty($item) ? false:true;
         });
+
         if(empty($data)){
             $this->info('没有最新的数据了');
         }else{

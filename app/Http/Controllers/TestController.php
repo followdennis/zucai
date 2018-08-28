@@ -75,8 +75,14 @@ class TestController extends Controller
         //获取matchId
 
 
-        preg_match('/Core.pageData\(\'matchId\', \'(\d+)\'\)/',$script,$out);
-        $matchId = $out[1];
+        preg_match('/Core.pageData\(\'matchId\', \'(\d+)\'\)/',$script,$match);
+        preg_match('/Core.pageData\(\'hostId\', \'(\d+)\'\)/',$script,$host);
+        preg_match('/Core.pageData\(\'guestId\', \'(\d+)\'\);/',$script,$guest);
+        $matchId = $match[1];
+        $hostId = $host[1];
+        $guestId = $guest[1];
+        echo $hostId;
+        echo $guestId;die;
         $league = implode(',',$input);
         $url2 = 'http://bisai.caipiao.163.com/match/data.html?cache='.$cache.'&modelId='.$modelId.'&matchId='.$matchId.'&league='.urlencode($league).'&field=10';
 
