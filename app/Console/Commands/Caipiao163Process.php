@@ -63,8 +63,9 @@ class Caipiao163Process extends Command
         $this->info('源数据处理');
         //获取一条未结束的比赛
         $now = Carbon::yesterday()->addHours(12);
+        $tomorrow = Carbon::tomorrow();
         $this->info($now);
-        $data = SourceWangyiCaipiao::where('betting_date','<',$now)->where('status',0)->orderBy('betting_date','desc')->groupBy('betting_date')->select('betting_date');
+        $data = SourceWangyiCaipiao::where('betting_date','<',$tomorrow)->where('status',0)->orderBy('betting_date','desc')->groupBy('betting_date')->select('betting_date');
         if($data->count() == 0){
             $this->info('库中暂无 需要处理的数据');
         }

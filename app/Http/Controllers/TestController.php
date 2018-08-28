@@ -54,6 +54,35 @@ class TestController extends Controller
             echo $i."<br/>";
         }
     }
+    public function score(){
+        $url = 'http://zx.caipiao.163.com/library/football/match.html?mId=1368658&hId=2228&vId=2233';
+        $cache = time();
+        $modelId = 'data_recCase';
+        $matchId = '';
+        $league = '';
+        $field = '';
+        echo $url;
+        $client = new Client();
+        $response = $client->request('get',$url);
+        echo "<pre>";
+        $html = $response->getBody();
+        $crawler = new Crawler();
+        $crawler->addHtmlContent($html);
+        $script = $crawler->filter('.docBody  script')->text();
+        $input = $crawler->filter('#data_recCase')->filter('dd.list')->filter('input')
+        ->extract(['value']); //获取联盟id
+
+        //获取matchId
+
+
+        preg_match('/Core.pageData\(\'matchId\', \'(\d+)\'\)/',$script,$out);
+        $matchId = $out[1];
+        $league = implode(',',$input);
+        $url2 = 'http://bisai.caipiao.163.com/match/data.html?cache='.$cache.'&modelId='.$modelId.'&matchId='.$matchId.'&league='.urlencode($league).'&field=10';
+
+        $html2 = $client->request('get',$url2)->getBody();
+        echo $html2;
+    }
     public function getNumber(){
         $str = 'aaabbbv321';
         preg_match('/\d+/',$str,$out);
