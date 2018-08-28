@@ -15,6 +15,7 @@ class CreateSourceWangyicaipiaoTable extends Migration
     {
         Schema::create('source_wangyicaipiao', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('match_id')->default(0)->comment('正文对应的match_id');
             $table->string('match_number')->nullable()->comment('比赛编号');
             $table->string('competition_name')->nullable()->comment('赛事名称');
             $table->timestamp('match_time')->nullable()->comment('比赛时间');
