@@ -128,4 +128,22 @@ class TestController extends Controller
         }
         return $color;
     }
+
+    /**
+     * 常用内容测试
+     */
+    public function test(){
+        echo "test<br/>";
+
+        $client = new Client();
+        $response = $client->request('get','http://bisai.caipiao.163.com/match/data.html?cache=1535184705081&modelId=data_recHis&matchId=2721965&league=110%2C577%2C109&field=10');
+        $response = $client->request('get','http://zx.caipiao.163.com/library/football/match.html?mId=1398732&hId=290&vId=216');
+
+//        $response = $client->request('get','http://bisai.caipiao.163.com/match/data.html?cache='.time().)
+        $url = '';
+
+            echo microtime(true);
+//        $html = $response->getBody();
+//        echo $html;
+    }
 }
