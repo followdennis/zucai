@@ -12,6 +12,10 @@ class TestController extends Controller
 {
     //
     public function index(){
+
+        $arr = ['h'=>'aaa','o'=>'bbb'];
+        $arr['bb'] = 'cc';
+        print_r($arr);die;
         $client = new Client();
         $response = $client->request('get','http://caipiao.163.com/order/jczq-hunhe/#from=leftnav');
         $html =  $response->getBody();
@@ -79,8 +83,8 @@ class TestController extends Controller
         preg_match('/Core.pageData\(\'hostId\', \'(\d+)\'\)/',$script,$host);
         preg_match('/Core.pageData\(\'guestId\', \'(\d+)\'\);/',$script,$guest);
         $matchId = $match[1];
-        $hostId = $host[1];
-        $guestId = $guest[1];
+        $realHostId = $host[1];
+        $realGuestId = $guest[1];
 
         $league = implode(',',$input);
         $url2 = 'http://bisai.caipiao.163.com/match/data.html?cache='.$cache.'&modelId='.$modelId.'&matchId='.$matchId.'&league='.urlencode($league).'&field=10';
@@ -89,31 +93,80 @@ class TestController extends Controller
         echo $html2;
         $crawler = new Crawler();
 
+        //修改比赛表  match_id
         $crawler->addHtmlContent($html2);
-        echo $crawler->filter('.u-tb-s02')->count();
+        //历史数据
+        $dom = $crawler->filter('.u-tb-s02 ')->each(function(Crawler $node ,$i) use($realHostId,$realGuestId,$matchId){
 
-        $dom = $crawler->filter('.u-tb-s02 ')->each(function(Crawler $node ,$i){
+            $tr = $node->filter('tr')->each(function(Crawler $node2 ,$j) use($i,$realHostId,$realGuestId,$matchId){
 
-            $tr = $node->filter('tr')->each(function(Crawler $node2 ,$j){
 
                if($j > 0){
                 $league_name = $node2->filter('td')->eq(0)->text();
 
                 $date = trim($node2->filter('th')->text());
-                $hostId = $node2->filter('td')->eq(1)->attr('data-fid');
+                $hostIdStr = $node2->filter('td')->eq(1)->attr('data-fid');
+                $hostId = explode(';',$hostIdStr)[1];
+
+
                 $host_name = $node2->filter('td')->eq(1)->filter('a')->text();
-                $scores = $node2->filter('td')->eq(2)->text();
-                $guestId = $node2->filter('td')->eq(3)->attr('data-fid');
+                $scoresStr = $node2->filter('td')->eq(2)->text();
+                $hostScore = explode(':',$scoresStr)[0];
+                $guestScore = explode(':',$scoresStr)[1];
+
+                $guestIdStr = $node2->filter('td')->eq(3)->attr('data-fid');
+                $guestId = explode(';',$guestIdStr)[1];
+
                 $guest_name = $node2->filter('td')->eq(3)->filter('a')->text();
                 $result = $node2->filter('td')->eq(4)->text();
-                echo $league_name.'-'.$date.'-'.$hostId.'-'.$host_name.'-'.$scores.'-'.$guestId.'-'.$guest_name.'-'.$result;
-                die;
+
+
+               $res_int = 0;
+               if($result == '胜'){
+                   $res_int = 1;
+               }elseif($result == '平'){
+                   $res_int = 2;
+               }elseif($result == '负'){
+                   $res_int = 3;
+               }
+                //主队数据
+                if($i == 0){
+                    $aim_team_id = $realHostId;
+                    //判断目标队伍的位置
+                    if($realHostId == $hostId){
+                        $is_host = 0;
+                    }else{
+                        $is_host = 1;
+                    }
+                    //写入主队历史数据库
+                }
+                //客队
+                if($i == 1){
+
+                    $aim_team_id = $realGuestId;
+                    if($realGuestId == $hostId){
+                        $is_host = 0;
+                    }else{
+                        $is_host = 1;
+                    }
+                    //写入客队历史数据库
+                }
+
+
+//                echo $league_name.'-'.$date.'-'.$hostId.'-'.$host_name.'-'.$hostScore.':'.$guestScore.'-'.$guestId.'-'.$guest_name.'-'.$result.'-'.$aim_team_id.'-'.$is_host .'-'.$res_int;
+
                }
 
 
 
             });
         });
+        //统计数据
+        $host_average = $crawler->filter('.u-tb-s01')->filter('tr')->eq(2)->filter('td')->eq(0)->text();
+        $guest_average = $crawler->filter('.u-tb-s01')->filter('tr')->eq(2)->filter('td')->eq(3)->text();
+
+        //修改比赛数据平均值和状态
+        echo $host_average .'-' . $guest_average;die;
     }
     public function getNumber(){
         $str = 'aaabbbv321';
