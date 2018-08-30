@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\Caipiao163History;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -18,7 +19,8 @@ class Kernel extends ConsoleKernel
         Commands\Caipiao163Process::class,
         Commands\Caipiaobao::class,//彩票宝
         Commands\Test::class,
-        Commands\AoKe::class   //澳客网
+        Commands\AoKe::class,   //澳客网,
+        Caipiao163History::class
     ];
 
     /**

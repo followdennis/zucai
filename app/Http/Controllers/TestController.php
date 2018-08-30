@@ -71,17 +71,49 @@ class TestController extends Controller
         $script = $crawler->filter('.docBody  script')->text();
         $input = $crawler->filter('#data_recCase')->filter('dd.list')->filter('input')
         ->extract(['value']); //获取联盟id
-
+        $crawler->clear();
         //获取matchId
 
 
-        preg_match('/Core.pageData\(\'matchId\', \'(\d+)\'\)/',$script,$out);
-        $matchId = $out[1];
+        preg_match('/Core.pageData\(\'matchId\', \'(\d+)\'\)/',$script,$match);
+        preg_match('/Core.pageData\(\'hostId\', \'(\d+)\'\)/',$script,$host);
+        preg_match('/Core.pageData\(\'guestId\', \'(\d+)\'\);/',$script,$guest);
+        $matchId = $match[1];
+        $hostId = $host[1];
+        $guestId = $guest[1];
+
         $league = implode(',',$input);
         $url2 = 'http://bisai.caipiao.163.com/match/data.html?cache='.$cache.'&modelId='.$modelId.'&matchId='.$matchId.'&league='.urlencode($league).'&field=10';
 
         $html2 = $client->request('get',$url2)->getBody();
         echo $html2;
+        $crawler = new Crawler();
+
+        $crawler->addHtmlContent($html2);
+        echo $crawler->filter('.u-tb-s02')->count();
+
+        $dom = $crawler->filter('.u-tb-s02 ')->each(function(Crawler $node ,$i){
+
+            $tr = $node->filter('tr')->each(function(Crawler $node2 ,$j){
+
+               if($j > 0){
+                $league_name = $node2->filter('td')->eq(0)->text();
+
+                $date = trim($node2->filter('th')->text());
+                $hostId = $node2->filter('td')->eq(1)->attr('data-fid');
+                $host_name = $node2->filter('td')->eq(1)->filter('a')->text();
+                $scores = $node2->filter('td')->eq(2)->text();
+                $guestId = $node2->filter('td')->eq(3)->attr('data-fid');
+                $guest_name = $node2->filter('td')->eq(3)->filter('a')->text();
+                $result = $node2->filter('td')->eq(4)->text();
+                echo $league_name.'-'.$date.'-'.$hostId.'-'.$host_name.'-'.$scores.'-'.$guestId.'-'.$guest_name.'-'.$result;
+                die;
+               }
+
+
+
+            });
+        });
     }
     public function getNumber(){
         $str = 'aaabbbv321';
@@ -156,5 +188,23 @@ class TestController extends Controller
             $i++;
         }
         return $color;
+    }
+
+    /**
+     * 常用内容测试
+     */
+    public function test(){
+        echo "test<br/>";
+
+        $client = new Client();
+        $response = $client->request('get','http://bisai.caipiao.163.com/match/data.html?cache=1535184705081&modelId=data_recHis&matchId=2721965&league=110%2C577%2C109&field=10');
+        $response = $client->request('get','http://zx.caipiao.163.com/library/football/match.html?mId=1398732&hId=290&vId=216');
+
+//        $response = $client->request('get','http://bisai.caipiao.163.com/match/data.html?cache='.time().)
+        $url = '';
+
+            echo microtime(true);
+//        $html = $response->getBody();
+//        echo $html;
     }
 }

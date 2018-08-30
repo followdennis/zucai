@@ -15,6 +15,7 @@ class CreateSourceWangyicaipiaoTable extends Migration
     {
         Schema::create('source_wangyicaipiao', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('match_id')->default(0)->comment('正文对应的match_id');
             $table->string('match_number')->nullable()->comment('比赛编号');
             $table->string('competition_name')->nullable()->comment('赛事名称');
             $table->timestamp('match_time')->nullable()->comment('比赛时间');
@@ -46,7 +47,9 @@ class CreateSourceWangyicaipiaoTable extends Migration
             $table->integer('host_team_id')->default(0)->comment('主队id');
             $table->integer('guest_team_id')->default(0)->comment('客队id');
             $table->string('detail_url',255)->nullable()->comment('详情页url');
-            $table->tinyInteger('has_history_score')->default(0)->comment('是否有历史进球数 0 ');
+            $table->tinyInteger('has_history_score')->default(0)->comment('是否有历史进球数 0 无 1 有');
+            $table->float('host_average',6,2)->default(0)->comment('主队平均进球数');
+            $table->float('guest_average',6,2)->default(0)->comment("客队平均进球数");
             $table->timestamps();
             $table->softDeletes();
         });
