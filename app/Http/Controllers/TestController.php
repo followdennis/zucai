@@ -71,7 +71,7 @@ class TestController extends Controller
         $script = $crawler->filter('.docBody  script')->text();
         $input = $crawler->filter('#data_recCase')->filter('dd.list')->filter('input')
         ->extract(['value']); //获取联盟id
-
+        $crawler->clear();
         //获取matchId
 
 
@@ -81,13 +81,39 @@ class TestController extends Controller
         $matchId = $match[1];
         $hostId = $host[1];
         $guestId = $guest[1];
-        echo $hostId;
-        echo $guestId;die;
+
         $league = implode(',',$input);
         $url2 = 'http://bisai.caipiao.163.com/match/data.html?cache='.$cache.'&modelId='.$modelId.'&matchId='.$matchId.'&league='.urlencode($league).'&field=10';
 
         $html2 = $client->request('get',$url2)->getBody();
         echo $html2;
+        $crawler = new Crawler();
+
+        $crawler->addHtmlContent($html2);
+        echo $crawler->filter('.u-tb-s02')->count();
+
+        $dom = $crawler->filter('.u-tb-s02 ')->each(function(Crawler $node ,$i){
+
+            $tr = $node->filter('tr')->each(function(Crawler $node2 ,$j){
+
+               if($j > 0){
+                $league_name = $node2->filter('td')->eq(0)->text();
+
+                $date = trim($node2->filter('th')->text());
+                $hostId = $node2->filter('td')->eq(1)->attr('data-fid');
+                $host_name = $node2->filter('td')->eq(1)->filter('a')->text();
+                $scores = $node2->filter('td')->eq(2)->text();
+                $guestId = $node2->filter('td')->eq(3)->attr('data-fid');
+                $guest_name = $node2->filter('td')->eq(3)->filter('a')->text();
+                $result = $node2->filter('td')->eq(4)->text();
+                echo $league_name.'-'.$date.'-'.$hostId.'-'.$host_name.'-'.$scores.'-'.$guestId.'-'.$guest_name.'-'.$result;
+                die;
+               }
+
+
+
+            });
+        });
     }
     public function getNumber(){
         $str = 'aaabbbv321';
