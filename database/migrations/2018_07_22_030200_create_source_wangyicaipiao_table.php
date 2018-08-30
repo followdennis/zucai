@@ -46,7 +46,7 @@ class CreateSourceWangyicaipiaoTable extends Migration
             $table->integer('host_team_id')->default(0)->comment('主队id');
             $table->integer('guest_team_id')->default(0)->comment('客队id');
             $table->string('detail_url',255)->nullable()->comment('详情页url');
-            $table->tinyInteger('has_history_score')->default(0)->comment('是否有历史进球数 0 无 1 有');
+            $table->tinyInteger('has_history_score')->default(0)->comment('是否有历史进球数 0 ');
             $table->timestamps();
             $table->softDeletes();
         });
