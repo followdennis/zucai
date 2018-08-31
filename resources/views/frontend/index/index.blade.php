@@ -512,6 +512,7 @@
                 <th scope="col">总球</th>
                 <th scope="col">预期</th>
                 <th scope="col">分差</th>
+                <th scope="col">平均进球</th>
                 <th scope="col">最后更新</th>
                 <th scope="col">状态</th>
                 <th scope="col">推荐/指数</th>
@@ -591,11 +592,23 @@
                     <button type="button" class="btn btn-sm {{ $item->rankDiffColor }}" style="margin-left:2px;">{{ $item->rankDiff }}</button>
                 </td>
                 <td rowspan="2">
+                    {{ $item->host_average }} - {{ $item->guest_average }} 差  <font color="red"><b>{{ $item->host_average - $item->guest_average }} </b></font> 和  <font  color="blue"><b>{{ $item->host_average + $item->guest_average }} </b></font>
+                </td>
+                <td rowspan="2" title="{{ $item->detail_url }}">
                     {{ $item->updateDate }}
                 </td>
                 <td rowspan="2" class="small">@if($item->status == 2) <font color="green">结束</font> @elseif($item->status == 3) <font color="red">异常</font> @elseif($item->status == 0)<font color="silver">未</font>   @endif</td>
                 <td rowspan="2">
-                    胜 <br/>
+                   <span  @if($item->match_result == $item->average_res) class="btn btn-success btn-sm"  @endif>
+                           @if($item->average_res == 1)
+                           胜
+                          @elseif($item->average_res == 2)
+                            平
+                          @elseif($item->average_res == 3)
+                            负
+                          @endif
+
+                   </span> <br/>
                     62
                 </td>
                 <td rowspan="2">

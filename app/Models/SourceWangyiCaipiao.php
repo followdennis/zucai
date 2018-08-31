@@ -12,7 +12,7 @@ class SourceWangyiCaipiao extends Model
     use SoftDeletes;
     public $table = 'source_wangyicaipiao';
     public $guarded = [];
-    protected $appends = ['color1','color2','hope','updateDate','bigScoreColor','rankDiff','rankDiffColor','isOpposite'];
+    protected $appends = ['color1','color2','hope','updateDate','bigScoreColor','rankDiff','rankDiffColor','isOpposite','average_res'];
 
     public function getList($condition){
         $condition['pageSize']  = isset($condition['pageSize']) ? $condition['pageSize'] :  15;
@@ -236,6 +236,21 @@ class SourceWangyiCaipiao extends Model
         }else{
             return 0;
         }
+    }
+    /**
+     * 通过平均进球，进行比赛推荐
+     */
+    public function getAverageResAttribute(){
+        $diff = $this->host_average - $this->guest_average;
+        $res = 0;
+        if($diff > 0.2){
+            $res = 1;
+        }elseif($diff >= -0.2){
+            $res = 2;
+        }else if($diff < -0.2){
+            $res = 3;
+        }
+        return $this->attributes['average_res'] = $res;
     }
 
 }
