@@ -95,6 +95,7 @@
                             <td colspan="11"><span style="float:left;display:block;margin-right:20px;">统计数据</span>
                             <ul class="order-statistics">
                                 @if($group->is_finish == 1)
+                                <li>总投入:<span class="font-weight-bold text-warning">{{ $group->invest_total }}</span></li>
                                 <li>总比赛个数:<span class="font-weight-bold text-danger">{{ $group->match_no }}</span></li>
                                 <li>串子正确数:<span class="font-weight-bold text-success">{{ $group->win_correct_num }}</span></li>
                                 <li>总求正确数:<span class="font-weight-bold text-info">{{ $group->score_correct_num }}</span> </li>
