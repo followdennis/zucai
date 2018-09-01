@@ -20,15 +20,16 @@
                     <th>投注结果</th>
                     <th>赔率</th>
                     <th>总进球数</th>
+                    <th>平均球</th>
                     <th>进球赔率</th>
                     <th style="width:101px;">查看比赛</th>
                 </thead>
                 <tbody>
             @foreach($groups as $k => $group)
                         <tr class="bg-info text-white">
-                            <td colspan="10">
+                            <td colspan="11">
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-8">
                                         <span class="font-weight-bold">编号</span>
                                         <span>{{ $group->id }}</span>
                                         <span class="font-weight-bold">下单时间</span>
@@ -42,6 +43,16 @@
                                         <span class="font-weight-bold">中奖金额</span>
                                         <span class="text-danger">{{ $group->money }}</span>
                                     </div>
+                                    <div class="col-md-4">
+                                        <ul class="order-res">
+                                            <li>结束时间:<span class="font-weight-bold" style="color:#e4e8ab!important;">{{ $group->end_time }}</span> </li>
+                                            @if($group->is_finish)
+                                            <li>是否结束 <span class="text-white"><i aria-hidden="true" class="fa fa-check"></i></span></li>
+                                            @else
+                                            <li>是否结束 <span class="text-danger"><i aria-hidden="true" class="fa fa-close"></i></span></li>
+                                            @endif
+                                        </ul>
+                                    </div>
                                 </div>
 
                             </td>
@@ -49,11 +60,11 @@
                     @foreach($group->items as $kk => $item )
                         <tr>
                             <th scope="row">{{ $kk+1}}</th>
-                            <td>{{ $item->match->host_team_name }}</td>
+                            <td>{{ $item->match->host_team_name }}({{ $item->match->host_average }})</td>
                             <td>
                                 <span @if($item->match->status == 2) class="font-weight-bold text-danger" @endif>{{ $item->match->host_team_score }}: {{ $item->match->guest_team_score }}</span>
                             </td>
-                            <td>{{ $item->match->guest_team_name }}</td>
+                            <td>{{ $item->match->guest_team_name }} ({{ $item->match->guest_average }})</td>
                             <td>{{ $item->give_score }}</td>
                             <td>{{ $item->win }}
                                 @if( $item->match->status == 2 && $item->betting_result == $item->match->match_result )
@@ -73,12 +84,15 @@
                                     <span class="text-danger"><i class="fa fa-close" aria-hidden="true"></i>({{ $item->match->total }})</span>
                             @endif
                             </td>
+                            <td>
+                                {{ $item->match->host_average + $item->match->guest_average }}
+                            </td>
                             <td>{{ $item->match->total_rate }}</td>
                             <td class="align-content-center"><button class="btn btn-sm btn-primary">比赛</button>&nbsp;<button class="btn btn-sm btn-info">详情</button></td>
                         </tr>
                     @endforeach
                         <tr>
-                            <td colspan="10">统计数据</td>
+                            <td colspan="11">统计数据</td>
                         </tr>
             @endforeach
                     </tbody>
