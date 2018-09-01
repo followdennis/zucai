@@ -25,6 +25,9 @@ class CreateAnalogueInjectionTable extends Migration
             $table->tinyInteger('total')->default(0)->comment('总进球');
             $table->float('total_rate',6,2)->default(0)->comment('进球对应的赔率');
             $table->string('remark')->nullable()->comment('备注');
+            $table->tinyInteger('is_remark')->default(0)->comment('是否第一次备注');
+            $table->string('remark2')->nullable()->comment('评估');
+            $table->tinyInteger('is_remark2')->default(0)->comment('是否第二次备注');
             $table->integer('group_id')->default(0)->comment('分组标记，唯一字符串');
             $table->smallInteger('sort')->default(0)->comment('排序值');
             $table->tinyInteger('is_finish')->default(0)->comment('比赛是否结束 1 结束 0 未结束');

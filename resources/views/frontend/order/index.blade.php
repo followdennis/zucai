@@ -20,8 +20,8 @@
                     <th>投注结果</th>
                     <th>赔率</th>
                     <th>总进球数</th>
-                    <th>平均球</th>
                     <th>进球赔率</th>
+                    <th>平均球</th>
                     <th style="width:101px;">查看比赛</th>
                 </thead>
                 <tbody>
@@ -84,10 +84,10 @@
                                     <span class="text-danger"><i class="fa fa-close" aria-hidden="true"></i>({{ $item->match->total }})</span>
                             @endif
                             </td>
-                            <td>
-                                {{ $item->match->host_average + $item->match->guest_average }}
-                            </td>
                             <td>{{ $item->match->total_rate }}</td>
+                            <td>
+                                <span class="font-weight-bold @if($item->match->total_average_diff == 1) text-danger @else text-primary @endif">{{ $item->match->total_average}} </span>
+                            </td>
                             <td class="align-content-center"><button class="btn btn-sm btn-primary">比赛</button>&nbsp;<button class="btn btn-sm btn-info">详情</button></td>
                         </tr>
                     @endforeach
@@ -108,6 +108,7 @@
             @endforeach
                     </tbody>
             </table>
+            {{ $groups->links() }}
         </div>
     </div>
 </div>

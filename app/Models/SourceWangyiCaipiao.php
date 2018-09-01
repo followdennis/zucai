@@ -12,7 +12,7 @@ class SourceWangyiCaipiao extends Model
     use SoftDeletes;
     public $table = 'source_wangyicaipiao';
     public $guarded = [];
-    protected $appends = ['color1','color2','hope','updateDate','bigScoreColor','rankDiff','rankDiffColor','isOpposite','average_res'];
+    protected $appends = ['color1','color2','hope','updateDate','bigScoreColor','rankDiff','rankDiffColor','isOpposite','average_res','total_average','total_average_diff'];
 
     public function getList($condition){
         $condition['pageSize']  = isset($condition['pageSize']) ? $condition['pageSize'] :  15;
@@ -253,4 +253,25 @@ class SourceWangyiCaipiao extends Model
         return $this->attributes['average_res'] = $res;
     }
 
+    /**
+     * 获取平均进球数
+     */
+    public function getTotalAverageAttribute(){
+        return $this->attributes['total_average'] = $this->host_average + $this->guest_average;
+    }
+
+    /**
+     *  总进球的平均值 与结果的差
+     */
+    public function getTotalAverageDiffAttribute(){
+        if($this->status == 2){
+            $diff = abs($this->total_average - $this->total);
+
+            if($diff <= 0.5){
+                return $this->attributes['total_average_diff'] = 1; //差值小于等于0.5
+            }
+            return $this->attributes['total_average_diff'] = 0;
+        }
+        return $this->attributes['total_average_diff'] = 0;
+    }
 }
