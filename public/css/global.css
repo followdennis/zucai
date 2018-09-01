@@ -1,3 +1,11 @@
 ul.order-res li{
     float:left;
 }
+ul.order-statistics{
+   margin-left:10px;
+    display:block;
+}
+ul.order-statistics li{
+    float:left;
+    margin-right:15px;
+}
