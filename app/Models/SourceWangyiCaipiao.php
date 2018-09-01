@@ -47,6 +47,14 @@ class SourceWangyiCaipiao extends Model
         })->paginate($pageSize);
         return $data;
     }
+
+    /**
+     * 通过id 数组获取数据
+     * @return mixed
+     */
+    public function getDataByIdArr($IdArr = []){
+        return self::whereIn('id',$IdArr)->get();
+    }
     public function getBettingDateList(){
         return self::orderBy('betting_date','desc')->groupBy('betting_date')->select('betting_date')->get()->map(function($item){
             return $item->betting_date = Carbon::parse($item->betting_date)->toDateString();
@@ -273,5 +281,11 @@ class SourceWangyiCaipiao extends Model
             return $this->attributes['total_average_diff'] = 0;
         }
         return $this->attributes['total_average_diff'] = 0;
+    }
+    public function host_history_score(){
+        return $this->hasMany('App\Models\WangyiHostHistoryScore','source_id','id');
+    }
+    public function guest_history_score(){
+        return $this->hasMany('App\Models\WangyiGuestHistoryScore','source_id','id');
     }
 }

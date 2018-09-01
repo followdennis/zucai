@@ -9,3 +9,9 @@ ul.order-statistics li{
     float:left;
     margin-right:15px;
 }
+ul.history_list li{
+    margin-right:5px;
+}
+ul.history_list span{
+    margin-right:5px;
+}

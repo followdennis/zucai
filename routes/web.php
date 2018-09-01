@@ -25,6 +25,8 @@ Route::namespace('Frontend')->group(function(){
     Route::get('betting',['uses'=>'IndexController@betting']);
     Route::get('betting_save',['uses'=>'IndexController@betting_save']);
     Route::get('order',['uses'=>'OrderController@index']);
+    Route::get('/order/detail',['uses'=>'OrderController@detail']);//订单列表查看比赛详情
+    Route::get('/order/remark',['uses'=>'OrderController@remark']);//备注信息展示
 });
 
 
