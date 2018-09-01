@@ -52,7 +52,9 @@ class AnalogueInjectionGroup extends Model
                 $group->score_money = $score_money;
                 $group->match_no = $match_no;
                 $group->sum = $score_money + $win_money - ($match_no+1)*20;
+                $group->invest_total = ($match_no + 1) * 20;
             }
+
         }
         return $groups;
     }
