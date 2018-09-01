@@ -27,7 +27,26 @@ layui.use(['layer', 'form'], function(){
     var layer = layui.layer
         ,form = layui.form;
 });
+$(function(){
+    //tips
+    $('.host_team').click(function(){
+        var html = $(this).find('.history_info').html();
+        layer.tips(html, this, {
+            tips: [1, '#0FA6D8'], //还可配置颜色
+            time:0,
+            closeBtn:1
+        });
+    });
 
+    $('.guest_team').click(function(){
+        var html = $(this).find('.history_info').html();
+        layer.tips(html, this, {
+            tips: [1, '#0FA6D8'], //还可配置颜色
+            time:0,
+            closeBtn:1
+        });
+    });
+})
 
 </script>
 @yield('SCRIPT')

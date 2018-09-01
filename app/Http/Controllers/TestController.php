@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AnalogueInjection;
 use App\Models\SourceWangyiCaipiao;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -13,9 +14,15 @@ class TestController extends Controller
     //
     public function index(){
 
-        $arr = ['h'=>'aaa','o'=>'bbb'];
-        $arr['bb'] = 'cc';
-        print_r($arr);die;
+        $data = AnalogueInjection::orderBy('id','desc')->get();
+        foreach($data as $k => $v){
+            echo $v->match_id;
+            foreach($v->scores as $kk => $vv){
+               echo  $vv->host_team_name;die;
+            }
+die;
+        }
+       die;
         $client = new Client();
         $response = $client->request('get','http://caipiao.163.com/order/jczq-hunhe/#from=leftnav');
         $html =  $response->getBody();

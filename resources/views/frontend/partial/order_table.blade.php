@@ -48,11 +48,27 @@
         @foreach($group->items as $kk => $item )
             <tr item-id="{{ $item->match_id }}">
                 <th scope="row">{{ $kk+1}}</th>
-                <td>{{ $item->match->host_team_name }}({{ $item->match->host_average }})</td>
+                <td class="host_team">
+                    <div class="history_info" style="display:none;">
+                        <ul class="history_list">
+                            @foreach($item->host_history_score as $kk => $tt)
+                                <li><span @if($tt->aim_team_id == $tt->host_team_id) class="text-white font-weight-bold" @else  class="text-secondary" @endif>{{ $tt->host_team_name }}</span><span class="text-danger font-weight-bold">{{ $tt->host_score}}: {{ $tt->guest_score }}</span><span @if($tt->aim_team_id == $tt->guest_team_id) class="text-white font-weight-bold" @else  class="text-secondary" @endif>{{ $tt->guest_team_name }}</span><span>{{ $tt->date }}</span></li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    {{ $item->match->host_team_name }}({{ $item->match->host_average }})</td>
                 <td>
                     <span @if($item->match->status == 2) class="font-weight-bold text-danger" @endif>{{ $item->match->host_team_score }}: {{ $item->match->guest_team_score }}</span>
                 </td>
-                <td>{{ $item->match->guest_team_name }} ({{ $item->match->guest_average }})</td>
+                <td class="guest_team">
+                    <div class="history_info" style="display:none;">
+                        <ul class="history_list">
+                            @foreach($item->guest_history_score as $kk => $tt)
+                                <li><span @if($tt->aim_team_id == $tt->host_team_id) class="text-white font-weight-bold" @else  class="text-secondary"  @endif>{{ $tt->host_team_name }}</span><span class="text-danger">{{ $tt->host_score}}: {{ $tt->guest_score }}</span><span @if($tt->aim_team_id == $tt->host_team_id) class="text-white font-weight-bold" @else  class="text-secondary" @endif>{{ $tt->guest_team_name }}</span><span>{{ $tt->date }}</span></li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    {{ $item->match->guest_team_name }} ({{ $item->match->guest_average }})</td>
                 <td>{{ $item->give_score }}</td>
                 <td>{{ $item->win }}
                     @if( $item->match->status == 2 && $item->betting_result == $item->match->match_result )

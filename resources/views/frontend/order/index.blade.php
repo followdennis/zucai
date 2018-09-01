@@ -5,6 +5,7 @@
 @section('SCRIPT')
 <script>
 $(function(){
+
     $('.match_table').click(function(){
         var item_id = $(this).closest('tr').attr('item-id');
         var url = '/order/detail?itemId='+item_id;

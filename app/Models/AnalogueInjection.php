@@ -33,5 +33,11 @@ class AnalogueInjection extends Model
         return $this->hasOne('App\Models\SourceWangyiCaipiao','id','match_id');
     }
 
+    public function host_history_score(){
+        return $this->hasMany('App\Models\WangyiHostHistoryScore','source_id','match_id');
+    }
+    public function guest_history_score(){
+        return $this->hasMany('App\Models\WangyiGuestHistoryScore','source_id','match_id');
+    }
 
 }
