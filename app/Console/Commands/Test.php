@@ -41,11 +41,13 @@ class Test extends Command
         //
         $this->info('测试');
 //        $this->calculateScoreData();
-        $data = $this->getCompetition();
-        foreach($data as $k => $v){
-            $this->info($k .'-'.$v->competition_name );
-        }
-        $this->info('结束');
+//        $data = $this->getCompetition();
+//        foreach($data as $k => $v){
+//            $this->info($k .'-'.$v->competition_name );
+//        }
+//        $this->info('结束');
+
+
 
     }
 
@@ -69,5 +71,18 @@ class Test extends Command
     public function getCompetition(){
         $data = SourceWangyiCaipiao::groupBy('competition_name')->select('competition_name')->get();
         return $data;
+    }
+    public function data(){
+        $data = \DB::table('source_wangyicaipiao_copy1')->where('has_history_score',1)->where('betting_date','2018-08-28 00:00:00')
+            ->where('match_id','>',0)->get();
+        foreach($data as $k => $item){
+            $status = SourceWangyiCaipiao::where('has_history_score',0)
+                ->where('host_team_name',$item->host_team_name)
+                ->where('guest_team_name',$item->guest_team_name)
+                ->where('betting_date','2018-08-29 00:00:00')
+                ->update(['has_history_score'=>1,'host_average'=>$item->host_average,'guest_average'=>$item->guest_average,'match_id'=>$item->match_id]);
+            $this->info($status.'--'.'yes'.'--'.$item->id);
+
+        }
     }
 }
