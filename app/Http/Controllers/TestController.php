@@ -17,7 +17,7 @@ class TestController extends Controller
         $data = AnalogueInjection::orderBy('id','desc')->get();
         foreach($data as $k => $v){
             echo $v->match_id;
-            foreach($v->scores as $kk => $vv){
+            foreach($v->host_history_score as $kk => $vv){
                echo  $vv->host_team_name;die;
             }
 die;
