@@ -31,6 +31,7 @@ class CreateAnalogueInjectionGroupTable extends Migration
             $table->integer('sort')->default(0)->comment('排序值');
             $table->timestamp('end_time')->nullabble()->comment('最大比赛结束时间');
             $table->tinyInteger('is_finish')->default(0)->comment('订单是否完成');
+            $table->tinyInteger('is_important')->default(0)->comment('是否重点关注');
             $table->timestamps();
             $table->softDeletes();
         });

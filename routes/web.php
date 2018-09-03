@@ -27,6 +27,7 @@ Route::namespace('Frontend')->group(function(){
     Route::get('order',['uses'=>'OrderController@index']);
     Route::get('/order/detail',['uses'=>'OrderController@detail']);//订单列表查看比赛详情
     Route::get('/order/remark',['uses'=>'OrderController@remark']);//备注信息展示
+    Route::get('/match/judge',['uses'=>'IndexController@judege']);//分析数据
 });
 
 
