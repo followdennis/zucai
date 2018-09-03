@@ -31,10 +31,32 @@ $(function(){
             type:2,
             title:'比赛详情',
             skin:'layui-layer-rim',
-            area:['600px','300px'],
+            area:['600px','400px'],
             btn:['确定','取消'],
             yes:function(layero,index){
-
+                var childPage = layer.getChildFrame('body');
+                var analogue_id = childPage.find('#analogueId').val();
+                var remark2 = childPage.find("#remark2").val();
+                var save_url = '/order/remark_save';
+                $.ajaxSetup({
+                    headers: { 'X-CSRF-TOKEN' : '{{ csrf_token() }}' }
+                });
+                var data = {analogueId:analogue_id,remark2:remark2};
+                $.ajax({
+                    url:save_url,
+                    type:'post',
+                    dataType:'json',
+                    data:data,
+                    success:function(data){
+                        if(data.code == 0){
+                            layer.msg('添加成功');
+                            layer.close(layero);
+                        }else{
+                            layer.msg('添加失败');
+                            layer.close(layero);
+                        }
+                    }
+                })
             },
             content:url,
             success:function(layero,index){

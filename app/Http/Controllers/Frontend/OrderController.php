@@ -31,8 +31,25 @@ class OrderController extends BaseController
      * 获取备注相关信息
      */
     public function remark(Request $request){
-        $analogue_id = $request->get('analogueId');
+        $analogue_id = $request->get('analogue_id');
+
         $data = AnalogueInjection::where('id',$analogue_id)->first();
+        if(empty($data)){
+            return false;
+        }
         return view('frontend.order.remark_detail',['data'=>$data]);
     }
+    public function remarkSave(Request $request){
+        if($request->ajax()){
+            $analogueId = intval($request->get('analogueId'));
+            $remark2 = $request->get('remark2');
+            $status = AnalogueInjection::where('id',$analogueId)->update(['remark2'=>$remark2]);
+            if($status){
+                return response()->json(['code'=>0,'msg'=>'添加成功']);
+            }else{
+                return response()->json(['code'=>-1,'msg'=>'添加失败']);
+            }
+        }
+    }
+
 }

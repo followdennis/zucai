@@ -46,9 +46,9 @@ function del_item(obj){
 }
 function add_remark(obj){
     layer.prompt({title: '备注内容', formType: 2}, function(text, index){
-        $(obj).attr('data-remark','okkkk');
+        $(obj).attr('data-remark',text);
         layer.close(index);
-        layer.msg('添加成功'+text);
+        layer.msg('添加成功');
     });
 }
 </script>
