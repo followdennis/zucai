@@ -52,7 +52,7 @@
                     <div class="history_info" style="display:none;">
                         <ul class="history_list">
                             @foreach($item->host_history_score as $kk => $tt)
-                                <li><span @if($tt->aim_team_id == $tt->host_team_id) class="text-white font-weight-bold" @else  class="text-secondary" @endif>{{ $tt->host_team_name }}</span><span class="text-danger font-weight-bold">{{ $tt->host_score}}: {{ $tt->guest_score }}</span><span @if($tt->aim_team_id == $tt->guest_team_id) class="text-white font-weight-bold" @else  class="text-secondary" @endif>{{ $tt->guest_team_name }}</span><span>{{ $tt->date }}</span></li>
+                                <li><span @if($tt->aim_team_id == $tt->host_team_id) class="{{ $tt->color }} font-weight-bold" @else  class="text-secondary" @endif>{{ $tt->host_team_name }}</span><span class="{{ $tt->host_score_color }} font-weight-bold">{{ $tt->host_score}}</span>: <span class="{{ $tt->guest_score_color }} font-weight-bold">{{ $tt->guest_score }}</span><span @if($tt->aim_team_id == $tt->guest_team_id) class="{{ $tt->color }} font-weight-bold" @else  class="text-secondary" @endif>{{ $tt->guest_team_name }}</span><span class="match-date">{{ $tt->date }}</span></li>
                             @endforeach
                         </ul>
                     </div>
@@ -64,7 +64,7 @@
                     <div class="history_info" style="display:none;">
                         <ul class="history_list">
                             @foreach($item->guest_history_score as $kk => $tt)
-                                <li><span @if($tt->aim_team_id == $tt->host_team_id) class="text-white font-weight-bold" @else  class="text-secondary"  @endif>{{ $tt->host_team_name }}</span><span class="text-danger">{{ $tt->host_score}}: {{ $tt->guest_score }}</span><span @if($tt->aim_team_id == $tt->host_team_id) class="text-white font-weight-bold" @else  class="text-secondary" @endif>{{ $tt->guest_team_name }}</span><span>{{ $tt->date }}</span></li>
+                                <li><span @if($tt->aim_team_id == $tt->host_team_id) class="{{ $tt->color }} font-weight-bold" @else  class="text-secondary"  @endif>{{ $tt->host_team_name }}</span><span class="{{ $tt->host_score_color }}">{{ $tt->host_score}}</span>:<span class="{{ $tt->guest_score_color }}"> {{ $tt->guest_score }}</span><span @if($tt->aim_team_id == $tt->guest_team_id) class="{{ $tt->color }} font-weight-bold" @else  class="text-secondary" @endif>{{ $tt->guest_team_name }}</span><span class="match-date">{{ $tt->date }}</span></li>
                             @endforeach
                         </ul>
                     </div>

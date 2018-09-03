@@ -154,16 +154,19 @@
                         var rate = $(this).find('td:eq(5) span').text();
                         var total = $(this).find('td:eq(6)').find('select option:selected').val();
                         var match_time = $(this).find('td:eq(7)').text();
+                        var remark = $(this).find('td:eq(8)').data('remark');
                         sum_rate *= parseFloat(rate);
                         if(match_time > max_time){
                             max_time = match_time;
                         }
-                        data['list'].push({itemId:item_id,giveScore:give_score,res:res,rate:rate,total:total,matchTime:match_time});
+                        data['list'].push({itemId:item_id,giveScore:give_score,res:res,rate:rate,total:total,matchTime:match_time,remark:remark});
                         num = i+1;
                     });
                     data['total'] = num;
                     data['maxTime'] = max_time;
                     data['sumRate'] = sum_rate.toFixed(2);
+                    data['comment'] = $("#comment").val();
+                    data['isImportant'] = $("input[name='is_important']").is('checked');
                     data = JSON.stringify(data);
                     $.ajax({
                         url:'/betting_save',
@@ -234,6 +237,7 @@
                                 '<td data-betting="'+ res +'">' + res_name + '(<span>'+ rate +'</span>)</td>' +
                                 '<td><select name="total" class="total_score"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td>'+
                                 '<td>'+ match_time +'</td>'+
+                                '<td onclick="add_remark(this)" data-remark=""><font color="green"><i class="fa fa-plus" aria-hidden="true"></i></font></td>'+
                                 '<td onclick="del_item(this)"><font color="red"><i class="fa fa-close" aria-hidden="true"></i></font></td>'+
                                 '</tr>';
                             body.find('#select_match tbody').append(html);
@@ -281,7 +285,24 @@
 
             }
         });
+        $('.remark_detail').click(function(){
+            var analogue_id = $(this).attr('analogue-id');
+            var url = '/order/remark?analogue_id=' + analogue_id;
+            layer.open({
+                type:2,
+                title:'比赛详情',
+                skin:'layui-layer-rim',
+                area:['600px','300px'],
+                btn:['确定','取消'],
+                yes:function(layero,index){
 
+                },
+                content:url,
+                success:function(layero,index){
+
+                }
+            })
+        });
 
         //获取统计数据
         calculate();

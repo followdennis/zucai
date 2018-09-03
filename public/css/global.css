@@ -15,3 +15,11 @@ ul.history_list li{
 ul.history_list span{
     margin-right:5px;
 }
+ul.history_list span.match-date{
+    float:right;
+}
+/*投注页面标记*/
+form.remark-info{
+    margin-left:-15px;
+    margin-right:-15px;
+}

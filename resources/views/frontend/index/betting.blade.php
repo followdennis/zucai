@@ -1,5 +1,6 @@
 @extends('frontend.layouts.common')
 @section('STYLE')
+    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/font-awesome/css/font-awesome.min.css') }}">
     <style>
         .total_score{
@@ -43,6 +44,13 @@ function del_item(obj){
 
     });
 }
+function add_remark(obj){
+    layer.prompt({title: '备注内容', formType: 2}, function(text, index){
+        $(obj).attr('data-remark','okkkk');
+        layer.close(index);
+        layer.msg('添加成功'+text);
+    });
+}
 </script>
 @endsection
 @section('content')
@@ -59,6 +67,7 @@ function del_item(obj){
                 <th>结果</th>
                 <th>进球数</th>
                 <th>比赛时间</th>
+                <th>备注</th>
                 <th>操作</th>
             </tr>
             </thead>
@@ -87,7 +96,20 @@ function del_item(obj){
                 <input type="text" id="payback" class="form-control col-sm-8 text-danger" value="20" readonly>
             </div>
         </form>
-
     </div>
+    <form class="form-horizontal remark-info" role="form">
+        <div class="form-group">
+            <label for="comment" >备注:</label>
+            <textarea class="form-control" rows="2" id="comment"></textarea>
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="is_important" id="is_important">
+                </label>
+                标记为重点
+            </div>
+        </div>
+    </form>
 </div>
 @endsection

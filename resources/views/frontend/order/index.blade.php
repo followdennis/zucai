@@ -26,7 +26,21 @@ $(function(){
     });
     $('.remark_detail').click(function(){
         var analogue_id = $(this).attr('analogue-id');
+        var url = '/order/remark?analogue_id=' + analogue_id;
+        layer.open({
+            type:2,
+            title:'比赛详情',
+            skin:'layui-layer-rim',
+            area:['600px','300px'],
+            btn:['确定','取消'],
+            yes:function(layero,index){
 
+            },
+            content:url,
+            success:function(layero,index){
+
+            }
+        })
     });
 })
 </script>

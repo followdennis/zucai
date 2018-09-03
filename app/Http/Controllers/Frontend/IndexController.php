@@ -182,11 +182,16 @@ class IndexController extends BaseController
      * 投注数据保存
      */
     public function betting_save(Request $request){
+        $this->validate($request,[
+            'data'=>'json'
+        ]);
         $json = $request->get('data');
         $data = json_decode($json,true);
         $total = $data['total']; //总比赛数量
         $list = $data['list'];
         $sumRate = $data['sumRate'];
+        $comment = $data['comment'];
+        $isImportant = $data['isImportant'] ? 1: 0;
         $max_end_time = Carbon::parse($data['maxTime'])->addHours(2);//最大的结束时间
         $today = Carbon::now()->startOfDay();
         $group_data = [
@@ -197,6 +202,8 @@ class IndexController extends BaseController
             'match_num' => $total,
             'betting_money' => 20,
             'sum_rate' => $sumRate,
+            'remark' => $comment,
+            'is_important'=> $isImportant,
             'money' => sprintf('%.2f',20*$sumRate),
             'created_at' => Carbon::now()->toDateTimeString(),
             'updated_at'=>Carbon::now()->toDateTimeString()
@@ -214,6 +221,7 @@ class IndexController extends BaseController
                 'total'=>$item['total'],
                 'group_id'=>$group_id,
                 'is_finish' => 0,
+                'remark' => $item['remark'],
                 'created_at'=>Carbon::now()->toDateTimeString(),
                 'updated_at' => Carbon::now()->toDateTimeString()
             ]);
@@ -229,5 +237,12 @@ class IndexController extends BaseController
             DB::rollBack();
         }
         return response()->json(['code'=>$code,'msg'=>$msg]);
+    }
+
+    /**
+     * 分析
+     */
+    public function judge(){
+
     }
 }
