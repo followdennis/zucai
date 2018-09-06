@@ -165,8 +165,8 @@
                     data['total'] = num;
                     data['maxTime'] = max_time;
                     data['sumRate'] = sum_rate.toFixed(2);
-                    data['comment'] = $("#comment").val();
-                    data['isImportant'] = $("input[name='is_important']").is('checked');
+                    data['comment'] = childPage.find("#comment").val();
+                    data['isImportant'] = childPage.find("input[name='is_important']").is('checked');
                     data = JSON.stringify(data);
                     $.ajax({
                         url:'/betting_save',
