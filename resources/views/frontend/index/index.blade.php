@@ -120,7 +120,7 @@
                 content: html
             });
         })
-
+        //投注
         $(".betting-btn").click(function(){
             var len = $("input[type='checkbox']:checked").parent().parent().find('td.rate_line1[data-finish="0"]').length;
             //选中的未开始比赛的数量
@@ -217,6 +217,16 @@
                             var guest_team = tr.find('td:eq(5)').html().trim();
                             var host_team_name = host_team.substring(0,host_team.indexOf('<br>'));
                             var guest_team_name = guest_team.substring(0,guest_team.indexOf('<br>'));
+                            var select_html = '<select class="total_score" name="total">';
+                            tr.find('td:eq(8)').find('select option').each(function(i,item){
+                                if($(this).is(':selected')){
+                                    $(this).prop('selected',true);
+                                    select_html += '<option value="'+ i +'" selected>'+ i +'</option>';
+                                }else{
+                                    select_html += '<option value="'+ i +'">'+ i +'</option>';
+                                }
+                            });  //拼接出默认的选中球
+                            select_html += '</select>';
                             var index_i = i + 1;
                             var res_name = '';
                             if(res == 1){
@@ -235,7 +245,9 @@
                                 '<td>'+ guest_team_name +'</td>' +
                                 '<td>'+ give_score +'</td>' +
                                 '<td data-betting="'+ res +'">' + res_name + '(<span>'+ rate +'</span>)</td>' +
-                                '<td><select name="total" class="total_score"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></td>'+
+                                '<td>' +
+                                select_html +
+                                '</td>'+
                                 '<td>'+ match_time +'</td>'+
                                 '<td onclick="add_remark(this)" data-remark=""><font color="green"><i class="fa fa-plus" aria-hidden="true"></i></font></td>'+
                                 '<td onclick="del_item(this)"><font color="red"><i class="fa fa-close" aria-hidden="true"></i></font></td>'+
@@ -254,6 +266,7 @@
 
 
         });
+        //选择胜平负
         $(".rate_line1 span").click(function(){
             var finish = $(this).parent('td').data('finish');
             if(finish == 0){
@@ -285,14 +298,15 @@
 
             }
         });
+        //分析
         $('.remark_detail').click(function(){
-            var analogue_id = $(this).attr('analogue-id');
-            var url = '/order/remark?analogue_id=' + analogue_id;
+            var item_id = $(this).parents('tr').attr('item-id');
+            var url = '/match/judge?item_id=' + item_id;
             layer.open({
                 type:2,
                 title:'比赛详情',
                 skin:'layui-layer-rim',
-                area:['600px','300px'],
+                area:['1200px','700px'],
                 btn:['确定','取消'],
                 yes:function(layero,index){
 

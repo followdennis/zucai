@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Models\AnalogueInjection;
 use App\Models\AnalogueInjectionGroup;
 use App\Models\SourceWangyiCaipiao;
+use App\Service\AnalysisService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -240,9 +241,11 @@ class IndexController extends BaseController
     }
 
     /**
-     * 分析
+     * 分析 2018-09-06 22:50:22 by @gavin
      */
-    public function judge(){
-
+    public function judge(Request $request,AnalysisService $analysis){
+        $id = intval($request->get('item_id'));
+        $data = $analysis->analysis($id);
+        return view('frontend.index.judge',$data);
     }
 }

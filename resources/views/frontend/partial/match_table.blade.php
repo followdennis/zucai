@@ -93,6 +93,8 @@
                     <span class="text-primary" data-rate="{{ $item->final_rate }}">平</span>({{ $item->final_rate }})
                 @elseif($item->match_result == 3)
                     <span class="text-success" data-rate="{{ $item->final_rate }}">负</span>({{ $item->final_rate }})
+                @else
+                    @include('frontend.partial.score_select')
                 @endif
 
             </td>
