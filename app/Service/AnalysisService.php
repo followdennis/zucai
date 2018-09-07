@@ -49,6 +49,7 @@ class AnalysisService extends Model
         $arr['host_total'] = implode(',',$host_total);
         $arr['guest_total'] = implode(',',$guest_total);
         $arr['history_total'] = implode(',',$history_total);
+        $arr['data'] = $item;
 
         return $arr;
     }
