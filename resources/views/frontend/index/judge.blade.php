@@ -219,7 +219,7 @@
         myChart4.setOption(option4);
     </script>
 @endsection
-
+@section('content')
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-9">
@@ -258,3 +258,4 @@ aa
         </div>
     </div>
 </div>
+@endsection
