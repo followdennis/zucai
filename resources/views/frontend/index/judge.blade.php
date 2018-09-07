@@ -18,7 +18,7 @@
                 trigger: 'axis'
             },
             legend: {
-                data:['主队','客队','累计']
+                data:['{{ $data->host_team_name }}','{{ $data->guest_team_name }}','累计']
             },
             grid: {
                 left: '3%',
@@ -28,7 +28,7 @@
             },
             toolbox: {
                 feature: {
-                    saveAsImage: {}
+                    saveAsImage: false
                 }
             },
             xAxis: {
@@ -41,13 +41,13 @@
             },
             series: [
                 {
-                    name:'主队',
+                    name:'{{ $data->host_team_name }}',
                     type:'line',
                     stack: '总量',
                     data:[{{ $host_score }}]
                 },
                 {
-                    name:'客队',
+                    name:'{{ $data->guest_team_name }}',
                     type:'line',
                     stack: '总量',
                     data:[{{ $guest_score }}]
@@ -75,7 +75,7 @@
                 trigger: 'axis'
             },
             legend: {
-                data:['主队总球','客队总球','累计']
+                data:['{{ $data->host_team_name }}','{{ $data->guest_team_name }}','累计']
             },
             grid: {
                 left: '3%',
@@ -85,7 +85,7 @@
             },
             toolbox: {
                 feature: {
-                    saveAsImage: {}
+                    saveAsImage: false
                 }
             },
             xAxis: {
@@ -98,13 +98,13 @@
             },
             series: [
                 {
-                    name:'主队',
+                    name:'{{ $data->host_team_name }}',
                     type:'line',
                     stack: '总量',
                     data:[{{ $host_total }}]
                 },
                 {
-                    name:'客队',
+                    name:'{{ $data->guest_team_name }}',
                     type:'line',
                     stack: '总量',
                     data:[{{ $guest_total }}]
@@ -120,8 +120,9 @@
         // 使用刚指定的配置项和数据显示图表。
         myChart2.setOption(option2);
 
+        //主队胜平负比例
         var myChart3 = echarts.init(document.getElementById('host_pie'));
-        app.title = '环形图';
+        myChart3.title = '{{ $data->host_team_name }}';
 
         option3 = {
             tooltip: {
@@ -131,11 +132,11 @@
             legend: {
                 orient: 'vertical',
                 x: 'left',
-                data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+                data:['胜','平','负']
             },
             series: [
                 {
-                    name:'访问来源',
+                    name:'{{ $data->host_team_name }}',
                     type:'pie',
                     radius: ['50%', '70%'],
                     avoidLabelOverlap: false,
@@ -158,15 +159,14 @@
                         }
                     },
                     data:[
-                        {value:335, name:'直接访问'},
-                        {value:310, name:'邮件营销'},
-                        {value:234, name:'联盟广告'},
-                        {value:135, name:'视频广告'},
-                        {value:1548, name:'搜索引擎'}
+                        {value:{{ $host_times['win'] }}, name:'胜'},
+                        {value:{{ $host_times['draw'] }}, name:'平'},
+                        {value:{{ $host_times['fail'] }}, name:'负'}
                     ]
                 }
             ]
         };
+        //客队胜平负比例
         myChart3.setOption(option3);
         //客队饼状图
         var myChart4 = echarts.init(document.getElementById('guest_pie'));
@@ -180,11 +180,11 @@
             legend: {
                 orient: 'vertical',
                 x: 'left',
-                data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+                data:['胜','平','负']
             },
             series: [
                 {
-                    name:'访问来源',
+                    name:'{{ $data->guest_team_name }}',
                     type:'pie',
                     radius: ['50%', '70%'],
                     avoidLabelOverlap: false,
@@ -207,16 +207,70 @@
                         }
                     },
                     data:[
-                        {value:335, name:'直接访问'},
-                        {value:310, name:'邮件营销'},
-                        {value:234, name:'联盟广告'},
-                        {value:135, name:'视频广告'},
-                        {value:1548, name:'搜索引擎'}
+                        {value:{{ $guest_times['win'] }}, name:'胜'},
+                        {value:{{ $guest_times['draw'] }}, name:'平'},
+                        {value:{{ $guest_times['fail'] }}, name:'负'}
                     ]
                 }
             ]
         };
         myChart4.setOption(option4);
+        //主客队胜平负趋势
+        var myChart5 = echarts.init(document.getElementById('match_result'));
+        option5 = {
+            title: {
+                text: 'Step Line'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['{{ $data->host_team_name }}', '{{ $data->guest_team_name }}']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: false
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: ['1', '2', '3', '4', '5', '6', '7','8','9','10']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {{--{--}}
+                    {{--name:'{{ $data->host_team_name }}',--}}
+                    {{--type:'bar',--}}
+                    {{--step: 'start',--}}
+                    {{--data:[{{ $host_result }}]--}}
+                {{--},--}}
+                {{--{--}}
+                    {{--name:'{{ $data->guest_team_name }}',--}}
+                    {{--type:'bar',--}}
+                    {{--step: 'middle',--}}
+                    {{--data:[{{ $guest_result }}]--}}
+                {{--},--}}
+                {
+                    name:'{{ $data->host_team_name }}',
+                    type:'line',
+                    data:[{{ $host_result }}]
+                },
+                {
+                    name:'{{ $data->guest_team_name }}',
+                    type:'line',
+                    data:[{{ $guest_result }}]
+                }
+            ]
+        };
+        myChart5.setOption(option5);
     </script>
 @endsection
 @section('content')
@@ -226,35 +280,89 @@
             <div id="team_score" style="width: 900px;height:200px;"></div>
         </div>
         <div class="col-md-3">
-b
+            <table class="table table-bordered">
+                <thead>
+                    <th colspan="2" class="text-center bg-warning text-white">统计数据</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th class="text-primary">主队平均进球</th>
+                        <td class="text-danger font-weight-bold">{{ $host_math['average'] }}</td>
+                    </tr>
+                    <tr>
+                        <th>主队方差</th>
+                        <td>{{ $host_math['square'] }}</td>
+                    </tr>
+                    <tr>
+                        <th>主队标准差</th>
+                        <td>{{ $host_math['variance'] }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-primary">客队平均进球</th>
+                        <td class="text-danger font-weight-bold">{{ $guest_math['average'] }}</td>
+                    </tr>
+                    <tr>
+                        <th>客队方差</th>
+                        <td>{{ $guest_math['square'] }}</td>
+                    </tr>
+                    <tr>
+                        <th>客队标准差</th>
+                        <td>{{ $guest_math['variance'] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div id="host_and_guest_total" style="width: 900px;height:200px;"></div>
+        </div>
+        <div class="col-md-3">
+            <table class="table table-bordered ">
+                <thead>
+                    <tr>
+                        <th colspan="3" class="text-center">{{ $data->host_team_name }} vs {{ $data->guest_team_name }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>编号</td>
+                        <td>联盟</td>
+                        <td>时间</td>
+                    </tr>
+                    <tr>
+                        <td class="text-danger font-weight-bold">{{ $data->match_number }}</td>
+                        <td>{{ $data->competition_name }}</td>
+                        <td>{{ date('m-m H:i',strtotime($data->match_time)) }}</td>
+                    </tr>
+                    <tr>
+                        <td>胜</td>
+                        <td>平</td>
+                        <td>负</td>
+                    </tr>
+                    <tr>
+                        <td>{{ $data->win_rate_1 }}</td>
+                        <td>{{ $data->draw_rate_1 }}</td>
+                        <td>{{ $data->fail_rate_1 }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
     <div class="row">
         <div class="col-md-8">
-            <div id="host_and_guest_total" style="width: 900px;height:200px;"></div>
-        </div>
-        <div class="col-md-4">
-            b
-        </div>
-    </div>
-    <div class="row">
-        <div class="com-md-3">
-            <div id="host_pie" style="width:200px;height:200px;margin-left:50px;">
-
+            <div id="match_result" style="width:750px;height:200px;">
             </div>
         </div>
-        <div class="col-md-3">
-            <div id="guest_pie" style="width:200px;height:200px;margin-left:50px;">
-
+        <div class="com-md-2">
+            <div id="host_pie" style="width:150px;height:150px;margin-top:20px;">
             </div>
+            主队:{{ $data->host_team_name }} ({{$data->host_team_rank}})
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-aa
-        </div>
-        <div class="col-md-6">
-            bb
+        <div class="col-md-2">
+            <div id="guest_pie" style="width:150px;height:150px;margin-top:20px;">
+            </div>
+            客队:{{ $data->guest_team_name }} ({{ $data->guest_team_rank }})
         </div>
     </div>
 </div>
