@@ -80,6 +80,8 @@ class AnalysisService extends Model
         $arr['guest_score'] = implode(',',$guest_score);//客队进球
         $arr['total_score'] = implode(',',$total_score);
 
+        $arr['host_total_average'] = round(array_sum($host_total)/count($host_total),2);
+        $arr['guest_total_average'] = round(array_sum($guest_total)/count($guest_total),2);
         $arr['host_total'] = implode(',',$host_total);  //主队历史交战两队总进球
         $arr['guest_total'] = implode(',',$guest_total);
         $arr['history_total'] = implode(',',$history_total);

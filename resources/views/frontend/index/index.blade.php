@@ -301,15 +301,16 @@
         //分析
         $('.remark_detail').click(function(){
             var item_id = $(this).parents('tr').attr('item-id');
+            var id = $(this).parents('tr').find('th:eq(0)').text();
             var url = '/match/judge?item_id=' + item_id;
             layer.open({
                 type:2,
-                title:'比赛详情',
+                title:'比赛详情-编号'+ id,
                 skin:'layui-layer-rim',
                 area:['1200px','700px'],
-                btn:['确定','取消'],
+                btn:['关闭'],
                 yes:function(layero,index){
-
+                    layer.close(layero);
                 },
                 content:url,
                 success:function(layero,index){

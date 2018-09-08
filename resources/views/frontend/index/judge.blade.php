@@ -217,7 +217,7 @@
         var myChart5 = echarts.init(document.getElementById('match_result'));
         option5 = {
             title: {
-                text: 'Step Line'
+                text: '主客队胜负趋势'
             },
             tooltip: {
                 trigger: 'axis'
@@ -274,49 +274,44 @@
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-9">
+        <div class="col-md-8">
             <div id="team_score" style="width: 750px;height:200px;"></div>
         </div>
-        <div class="col-md-3">
-            <table class="table table-bordered">
+        <div class="col-md-4">
+            <table class="table table-bordered table-md">
                 <thead>
-                    <th colspan="2" class="text-center bg-warning text-white">统计数据</th>
+                    <th colspan="4" class="text-center bg-warning text-white">统计数据</th>
                 </thead>
                 <tbody>
                     <tr>
                         <th class="text-primary">主队平均进球</th>
                         <td class="text-danger font-weight-bold">{{ $host_math['average'] }}</td>
-                    </tr>
-                    <tr>
-                        <th>主队方差</th>
-                        <td>{{ $host_math['square'] }}</td>
-                    </tr>
-                    <tr>
-                        <th>主队标准差</th>
                         <td>{{ $host_math['variance'] }}</td>
+                        <td>{{ $host_math['square'] }}</td>
                     </tr>
                     <tr>
                         <th class="text-primary">客队平均进球</th>
                         <td class="text-danger font-weight-bold">{{ $guest_math['average'] }}</td>
-                    </tr>
-                    <tr>
-                        <th>客队方差</th>
+                        <td>{{ $guest_math['variance'] }}</td>
                         <td>{{ $guest_math['square'] }}</td>
                     </tr>
                     <tr>
-                        <th>客队标准差</th>
-                        <td>{{ $guest_math['variance'] }}</td>
+                        <td>总计</td>
+                        <td>{{ $host_math['average']+ $guest_math['average'] }}</td>
+                        <td>{{ $host_math['variance'] - $guest_math['variance'] }}</td>
+                        <td>{{ $host_math['square'] - $guest_math['square'] }}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-9">
-            <div id="host_and_guest_total" style="width: 750px;height:200px;"></div>
+        <div class="col-md-8">
+            <div id="match_result" style="width:750px;height:200px;">
+            </div>
         </div>
-        <div class="col-md-3">
-            <table class="table table-bordered ">
+        <div class="col-md-4">
+            <table class="table table-bordered table-sm ">
                 <thead>
                     <tr>
                         <th colspan="3" class="text-center">{{ $data->host_team_name }} vs {{ $data->guest_team_name }}</th>
@@ -330,8 +325,8 @@
                     </tr>
                     <tr>
                         <td class="text-danger font-weight-bold">{{ $data->match_number }}</td>
-                        <td>{{ $data->competition_name }}</td>
-                        <td>{{ date('m-m H:i',strtotime($data->match_time)) }}</td>
+                        <td class="text-primary">{{ $data->competition_name }}</td>
+                        <td class="text-warning">{{ date('m-m H:i',strtotime($data->match_time)) }}</td>
                     </tr>
                     <tr>
                         <td>胜</td>
@@ -343,24 +338,32 @@
                         <td>{{ $data->draw_rate_1 }}</td>
                         <td>{{ $data->fail_rate_1 }}</td>
                     </tr>
+                    <tr>
+                        <th>主队平均</th>
+                        <td>{{$host_total_average}}</td>
+                        <td rowspan="2" class="text-center font-weight-bold text-success">{{ $host_total_average + $guest_total_average }}</td>
+                    </tr>
+                    <tr>
+                        <th>客队平均</th>
+                        <td>{{ $guest_total_average }}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
     <div class="row">
         <div class="col-md-8">
-            <div id="match_result" style="width:750px;height:200px;">
-            </div>
+            <div id="host_and_guest_total" style="width: 750px;height:200px;"></div>
         </div>
         <div class="com-md-2">
             <div id="host_pie" style="width:150px;height:150px;margin-top:20px;">
             </div>
-            主队:{{ $data->host_team_name }} ({{$data->host_team_rank}})
+            主队:{{ $data->host_team_name }} (<font class="text-primary font-weight-bold">{{$data->host_team_rank}}</font>)
         </div>
         <div class="col-md-2">
             <div id="guest_pie" style="width:150px;height:150px;margin-top:20px;">
             </div>
-            客队:{{ $data->guest_team_name }} ({{ $data->guest_team_rank }})
+            客队:{{ $data->guest_team_name }} (<font class="text-primary font-weight-bold">{{ $data->guest_team_rank }}</font>)
         </div>
     </div>
 </div>
