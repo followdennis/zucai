@@ -43,19 +43,19 @@
                 {
                     name:'{{ $data->host_team_name }}',
                     type:'line',
-                    stack: '总量',
+
                     data:[{{ $host_score }}]
                 },
                 {
                     name:'{{ $data->guest_team_name }}',
                     type:'line',
-                    stack: '总量',
+
                     data:[{{ $guest_score }}]
                 },
                 {
                     name:'累计',
                     type:'line',
-                    stack: '总量',
+
                     data:[{{ $total_score }}]
                 }
             ]
@@ -100,19 +100,17 @@
                 {
                     name:'{{ $data->host_team_name }}',
                     type:'line',
-                    stack: '总量',
                     data:[{{ $host_total }}]
                 },
                 {
                     name:'{{ $data->guest_team_name }}',
                     type:'line',
-                    stack: '总量',
                     data:[{{ $guest_total }}]
                 },
                 {
                     name:'累计',
                     type:'line',
-                    stack: '总量',
+//                    stack: '总量',
                     data:[{{ $history_total }}]
                 }
             ]
@@ -277,7 +275,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-9">
-            <div id="team_score" style="width: 900px;height:200px;"></div>
+            <div id="team_score" style="width: 750px;height:200px;"></div>
         </div>
         <div class="col-md-3">
             <table class="table table-bordered">
@@ -315,7 +313,7 @@
     </div>
     <div class="row">
         <div class="col-md-9">
-            <div id="host_and_guest_total" style="width: 900px;height:200px;"></div>
+            <div id="host_and_guest_total" style="width: 750px;height:200px;"></div>
         </div>
         <div class="col-md-3">
             <table class="table table-bordered ">
