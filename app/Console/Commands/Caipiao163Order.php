@@ -62,7 +62,7 @@ class Caipiao163Order extends Command
             }
             $real_max_time = Carbon::parse($max_time)->addHours(2);
             //更新状态
-           $status = AnalogueInjectionGroup::where('id',$item->id)->where('is_finish',0)->update(['is_finish'=>$is_finish,'end_time'=>$real_max_time]);
+            $status = AnalogueInjectionGroup::where('id',$item->id)->where('is_finish',0)->update(['is_finish'=>$is_finish,'end_time'=>$real_max_time]);
             if($status){
                 $this->info($status.'-'.$item->id);
             }

@@ -88,8 +88,14 @@ class Caipiao163Process extends Command
                     ])
                     ->first();
                 if(!empty($source_item)){
+
                     if(preg_match('/-/', $data['total_score'][$k]['total'])){
                         $this->info($team['competition_name'] . $team['match_number'] .'没出结果');
+                        //过期数据作废
+                        if($source_item->betting_date < Carbon::now()->subDays(3)){
+                            $source_item->status = 3;
+                            $source_item->save();
+                        }
                     }else{
                         if(preg_match('/-/',$data['win'][$k]['win'])){
                             $data['win'][$k]['win_rate'] = 0;
@@ -97,6 +103,7 @@ class Caipiao163Process extends Command
                         if(preg_match('/-/',$data['give_score'][$k]['give_score_win'])){
                             $data['give_score'][$k]['give_score_rate'] = 0;
                         }
+
                         $source_item->status = 2;
                         $source_item->host_team_score = $data['result'][$k]['host_score'];
                         $source_item->guest_team_score = $data['result'][$k]['guest_score'];
@@ -112,7 +119,6 @@ class Caipiao163Process extends Command
                         $this->info('success--'.$k);
                     }
                 }
-
             }
         }
     }
@@ -299,5 +305,6 @@ class Caipiao163Process extends Command
             echo $name;
         });
     }
+
 
 }
