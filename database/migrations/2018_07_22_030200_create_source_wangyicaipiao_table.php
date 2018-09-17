@@ -20,9 +20,9 @@ class CreateSourceWangyicaipiaoTable extends Migration
             $table->string('competition_name')->nullable()->comment('赛事名称');
             $table->timestamp('match_time')->nullable()->comment('比赛时间');
             $table->string('host_team_name')->nullable()->comment('主队名称');
-            $table->integer('host_team_rank')->default(0)->comment('主队排名');
+            $table->string('host_team_rank')->default(0)->comment('主队排名');
             $table->string('guest_team_name')->nullable()->comment('客队名称');
-            $table->integer('guest_team_rank')->default(0)->comment('客队排名');
+            $table->string('guest_team_rank')->default(0)->comment('客队排名');
             $table->tinyInteger('give_score_1')->default(0)->comment('让球1');
             $table->float('win_rate_1',6,2)->default(0)->comment('胜赔率');
             $table->float('draw_rate_1',6,2)->default(0)->comment('平赔率');

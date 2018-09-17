@@ -204,6 +204,9 @@ class Caipiao163Process extends Command
             if(preg_match('/-/',$win)){
                 $win = '其他';
             }
+            if(preg_match('/-/',$win)){
+                $win_rate = 0;
+            }
             $x = [
                 'give_score_win'=>$win,
                 'give_score_rate'=>$win_rate,
