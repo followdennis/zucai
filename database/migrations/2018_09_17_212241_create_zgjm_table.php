@@ -13,12 +13,15 @@ class CreateZgjmTable extends Migration
      */
     public function up()
     {
+        //周公解梦
         Schema::create('zgjm', function (Blueprint $table) {
             $table->increments('id');
             $table->string('title')->nullable()->comment('标题');
             $table->string('author')->nullable()->comment('作者');
             $table->string('cate_name')->nullable()->comment('分类名称');
             $table->integer('cate_id')->default(0)->comment('分类id');
+            $table->tinyInteger('cate_level')->default(0)->comment('分类层级');
+            //标签为一对多或多对多的关系，另行添加
             $table->string('thumb')->nullable()->comment('图片');
             $table->tinyInteger('has_thumb')->default(0)->comment('是否有缩略图');
             $table->string('keywords')->nullable()->comment('关键词');

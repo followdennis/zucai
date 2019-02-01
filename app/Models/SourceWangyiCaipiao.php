@@ -66,7 +66,7 @@ class SourceWangyiCaipiao extends Model
      *  获取排名差
      */
     public function getRankDiffAttribute(){
-        return $this->attributes['rankDiff'] = $this->host_team_rank - $this->guest_team_rank;
+        return $this->attributes['rankDiff'] = preg_match('/\d+/',$this->host_team_rank) - preg_match('/\d+/',$this->guest_team_rank);
     }
 
     /**
@@ -76,7 +76,7 @@ class SourceWangyiCaipiao extends Model
     public function getIsOppositeAttribute(){
         $rank_num = 0;
         $rate_num = 0;
-        $rank_result = $this->host_team_rank - $this->guest_team_rank;
+        $rank_result = preg_match('/\d+/',$this->host_team_rank) - preg_match('/\d+/',$this->guest_team_rank);
 
         if($rank_result < -5 ){
             $rank_num = 1;
@@ -119,7 +119,7 @@ class SourceWangyiCaipiao extends Model
     }
 
     public function getRankDiffColorAttribute(){
-        $diff = abs($this->host_team_rank - $this->guest_team_rank);
+        $diff = abs(preg_match('/\d+/',$this->host_team_rank) - preg_match('/\d+/',$this->guest_team_rank));
         if( $diff > 10){
             $color = 'btn-outline-danger';
         }else if($diff > 5){
@@ -182,8 +182,8 @@ class SourceWangyiCaipiao extends Model
             3 => $this->fail_rate_1
         ];
         $rank = [
-            0 => $this->host_team_rank,
-            1 => $this->guest_team_rank
+            0 => preg_match('/\d+/',$this->host_team_rank),
+            1 => preg_match('/\d+/',$this->guest_team_rank)
         ];
         $pos = $this->match_result;
         return $this->attributes['hope'] = $this->hope($rank,$arr,$pos);
