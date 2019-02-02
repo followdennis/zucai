@@ -2,6 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Models\AokeHalfGround;
+use App\Models\AokeMatchScore;
+use App\Models\AokeTotalScore;
+use App\Models\AokeWinAndFail;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use QL\Dom\Query;
@@ -28,6 +33,10 @@ class AoKe extends Command
     //日期 例：2019-02-01 morder : 6176
     private $more_url = 'http://www.okooo.com/jingcai/?action=more&LotteryNo=date&MatchOrder=morder';
 
+    protected $success_num = 0;
+    protected $fail_num = 0;
+    protected $total_num = 0;
+
     /**
      * Create a new command instance.
      *
@@ -48,6 +57,9 @@ class AoKe extends Command
         //
         $this->info('澳客网');
         $this->crawler();
+        $this->info('总计:'.$this->total_num);
+        $this->info('成功:'.$this->success_num . '条');
+        $this->info('失败:'. $this->fail_num . "条");
     }
 
     /**
@@ -61,24 +73,46 @@ class AoKe extends Command
         $htmls = $ql->find('.cont')->htmls();
 
         $this->info('开始,共'.count($htmls) .'天的数据');
+        $max_mod = \App\Models\Aoke::orderBy('id','desc')->first();
+        $max_match_time = $max_mod ?  $max_mod->match_time :'2000-01-01 00:00:00';
+
+        $max_match_num = $max_mod ? $max_mod->num :0;
 
         $rules = $this->getOneRules();
         foreach($htmls as $index => $html){
             $match_dom = QueryList::html($html);
             $time = $match_dom->find('.riqi .time')->attr('data-time');
-            $datetime = date('Y-m-m H:i:s',$time);//当天比赛的日期
+            $spec_time = $match_dom->find('.riqi .time > a span')->text();
+
+            $spec_time = strtotime(substr($spec_time,0,10)); //时间过滤转换
+
+
+            $datetime = date('Y-m-d H:i:s',$spec_time);//投注日期
+
             $date = date('Y-m-d',$time);
-           //是否停止投注 1 表示停止
-           $data = $match_dom->rules($rules)->query()->getData();
+
+            $data = $match_dom->rules($rules)->query()->getData();
 
           foreach($data as $key => $item ){
               if(isset( $item['data_end']) && $item['data_end'] == 0){
-//                  print_r($item);
+
+                  //总数居统计
+                  $this->total_num++;
                   if( count($item) < 16){
                       $this->info('字段不全');
-                      Log::info("字段不全".date() .$item['match_code'] + $item['time']);
+                      Log::info("字段不全".date() .$item['match_code'] + $item['match_time']);
                   } else {
-                        $detail_url = str_replace(['date','morder'],[$date,$item['data_morder']],$this->more_url);
+                        $item['match_time'] = str_replace('比赛时间:','',$item['match_time']);
+                        $item['betting_date'] = $datetime;
+                        if( strtotime($max_match_time) > strtotime($item['match_time'])){
+                            continue;
+                        }else if( $max_match_time == $item['match_time']){
+                            if( $max_match_num >= $item['num']){
+                                continue;
+                            }
+                        }
+
+                        $detail_url = str_replace(['date','morder'],[$date,$item['num']],$this->more_url);
                         $rate_detail = QueryList::get($detail_url);
 
                         $total_html = $rate_detail->find('.jnm:eq(0) .zk_1')->html();
@@ -98,10 +132,59 @@ class AoKe extends Command
                         //半场数据
                         $half_res = QueryList::html($half_html)->rules($half_ground_rules)->query()->getData();
 
-                        print_r($score_res);
-                        print_r($total_res);
-                        print_r($half_res);
-                      die;
+
+                        if(isset($item['host_team_rank']) && !preg_match('/-/',$item['host_team_rank'])){
+                            $item['host_team_rank'] = str_replace(['[',']'],'',$item['host_team_rank']);
+                        }else{
+                            $item['host_team_rank'] = 0;
+                        }
+                        if( isset($item['guest_team_rank']) && !preg_match('/-/',$item['guest_team_rank'])){
+                            $item['guest_team_rank'] = str_replace(['[',']'],'',$item['guest_team_rank']);
+                        }else {
+                            $item['guest_team_rank'] = 0;
+                        }
+                        if(isset( $item['give_score'])){
+                            $item['give_score'] = str_replace('+','',$item['give_score']);
+                        }
+                        $create_time = Carbon::now()->toDateTimeString();
+                      //胜平负的数据
+                        $comm_data = $item;
+                        $comm_data['created_at'] = $create_time;
+                        unset($comm_data['data_end']);
+                        unset($comm_data['match_code']);
+
+                        //插入主表数据
+                        $aoke_id = \App\Models\Aoke::insertGetId($comm_data);
+                        if( $aoke_id){
+
+                            //胜平负数据
+                            $win_and_fail_data = $this->getWinAndRate($item,$aoke_id,$create_time);
+                            //插入胜平负数据
+                            $win_and_fail_res = AokeWinAndFail::insert($win_and_fail_data);
+
+                            //总进球的数据
+                            $total_score_data = $this->getTotalScoreData($total_res,$aoke_id,$item['match_id'],$create_time);
+                            //插入总进球数数据
+                            $total_score_res = AokeTotalScore::insert($total_score_data);
+                            //比分数据
+                            $match_score_data = $this->getMatchScoreData($score_res,$aoke_id,$item['match_id'],$create_time);
+                            //插入比分数据
+                            $match_score_res = AokeMatchScore::insert($match_score_data);
+                            //半场数据
+                            $half_ground_data = $this->getHalfGroundData($half_res,$aoke_id,$item['match_id'],$create_time);
+                            //插入半场数据
+                            $half_ground_res = AokeHalfGround::insert($half_ground_data);
+
+                            if( $win_and_fail_res && $total_score_res && $match_score_res && $half_ground_res){
+                                $this->info('数据插入成功，match_id=' . $item['match_id'] . '比赛日期为:' . $item['match_time']);
+                                $this->success_num++;
+                            }else {
+                                $this->info('插入失败,比赛id为'.$item['match_id']);
+                                $this->fail_num++;
+                            }
+
+                        }
+
                   }
 
               }
@@ -116,52 +199,57 @@ class AoKe extends Command
             'data_end' =>[
                 '.touzhu_1','data-end'
             ],
-            //查看更多状态
-            'data_morder' => [
+            //赛事编号
+            'num' => [
                 '.touzhu_1','data-morder'
+            ],
+            //matc_id
+            'match_id' => [
+                '.touzhu_1','data-mid'
             ],
             //赛事当天编号
             'match_code' => [
                 'span.xulie','text'
             ],
-            'match_name' => [
+            //赛事名称
+            'competition_name' => [
                 'a.saiming','text'
             ],
-            'time' => [
+            'match_time' => [
                 '.shijian','title'
             ],
-            'host_team'=>[
+            'host_team_name'=>[
                 '.shenpf  .zhu .zhum','text'
             ],
-            'host_rank' => [
+            'host_team_rank' => [
                 '.shenpf .zhu .paim p','text'
             ],
-            'sheng' => [
+            'win_rate' => [
                 '.shenpf .zhu .peilv','text'
             ],
-            'ping' => [
+            'draw_rate' => [
                 '.shenpf .ping .peilv','text'
             ],
-            'fu' => [
+            'fail_rate' => [
                 '.shenpf .fu .peilv','text'
             ],
-            'guest_team' => [
+            'guest_team_name' => [
                 '.shenpf  .fu .zhum','text'
             ],
-            'guest_rank' => [
+            'guest_team_rank' => [
                 '.shenpf .fu .paim p','text'
             ],
             //让球
             'give_score' => [
                 '.rangqiuspf .zhu .zhud span','text'
             ],
-            'rang_sheng' => [
+            'give_score_win_rate' => [
                 '.rangqiuspf .zhu .peilv','text'
             ],
-            'rang_ping' => [
+            'give_score_draw_rate' => [
                 '.rangqiuspf  .ping .peilv','text'
             ],
-            'rang_fu' => [
+            'give_score_fail_rate' => [
                 '.rangqiuspf  .fu .peilv','text'
             ]
         ];
@@ -181,10 +269,10 @@ class AoKe extends Command
     //总进球规则
     public function getTotalScoreRules(){
         return $total_score_rules = [
-            'total_score' =>[
+            'total' =>[
                 'div.ping','data-wz'
             ],
-            'total_score_rate' => [
+            'total_rate' => [
                 'div.ping','data-sp'
             ]
         ];
@@ -199,5 +287,110 @@ class AoKe extends Command
                 'div.ping','data-sp'
             ]
         ];
+    }
+    //获取胜平负和让球胜平负数据
+    public function getWinAndRate($item,$aoke_id,$crate_time){
+        return [
+            [
+                'aoke_id'=> $aoke_id,
+                'match_id' => $item['match_id'],
+                'give_score' => 0,
+                'match_result' => 3,
+                'rate' => $item['win_rate'],
+                'created_at' => $crate_time
+            ],
+            [
+                'aoke_id'=> $aoke_id,
+                'match_id' => $item['match_id'],
+                'give_score' => 0,
+                'match_result' => 1,
+                'rate' => $item['draw_rate'],
+                'created_at' => $crate_time
+            ],
+            [
+                'aoke_id'=> $aoke_id,
+                'match_id' => $item['match_id'],
+                'give_score' => 0,
+                'match_result' => 0,
+                'rate' => $item['fail_rate'],
+                'created_at' => $crate_time
+            ],
+            [
+                'aoke_id'=> $aoke_id,
+                'match_id' => $item['match_id'],
+                'give_score' => $item['give_score'],
+                'match_result' => 3,
+                'rate' => $item['give_score_win_rate'],
+                'created_at' => $crate_time
+            ],
+            [
+                'aoke_id'=> $aoke_id,
+                'match_id' => $item['match_id'],
+                'give_score' => $item['give_score'],
+                'match_result' => 1,
+                'rate' => $item['give_score_draw_rate'],
+                'created_at' => $crate_time
+            ],
+            [
+                'aoke_id'=> $aoke_id,
+                'match_id' => $item['match_id'],
+                'give_score' => $item['give_score'],
+                'match_result' => 0,
+                'rate' => $item['give_score_fail_rate'],
+                'created_at' => $crate_time
+            ]
+        ];
+    }
+    //获取总进球的数据
+    public function getTotalScoreData($total_res,$aoke_id,$match_id,$create_time){
+        $data = [];
+        foreach($total_res as $k => $item){
+            array_push($data,[
+                'score' => $item['total'],
+                'rate' => $item['total_rate'],
+                'match_id' => $match_id,
+                'aoke_id' => $aoke_id,
+                'created_at' => $create_time
+            ]);
+        }
+        return $data;
+    }
+    //比分数据
+    public function getMatchScoreData($score_res,$aoke_id,$match_id,$create_time){
+
+        $data = [];
+        if(empty($score_res)){
+            return [];
+        }
+        foreach($score_res as $index => $item){
+            array_push($data,[
+                'score_type'=>$item['team_score'],
+                'score_type_id' => $index +1,
+                'rate' => $item['rate'],
+                'match_id' => $match_id,
+                'aoke_id' => $aoke_id,
+                'created_at' => $create_time
+            ]);
+        }
+        return $data;
+
+    }
+    //获取半场数据
+    public function getHalfGroundData($half_res,$aoke_id,$match_id,$create_time){
+        $data = [];
+        if(empty($half_res)){
+            return [];
+        }
+        foreach($half_res as $index => $item) {
+            array_push($data, [
+                'half_result_id' => $index + 1,
+                'half_result_name' => $item['half_res'],
+                'rate' => $item['half_ground_rate'],
+                'match_id' => $match_id,
+                'aoke_id' => $aoke_id,
+                'created_at' => $create_time
+            ]);
+        }
+        return $data;
     }
 }

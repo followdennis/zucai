@@ -18,7 +18,9 @@ class CreateMatchScoreTable extends Migration
          */
         Schema::create('match_score', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('aoke_id')->default(0)->comment('奥克表的主键id');
             $table->integer('match_id')->default(0)->comment('赛事id');
+
             /**
              * 比分类型
              * 1:0 2:0 2:1 3:0 3:1 3:2 4:0 4:1 4:2 5:0 5:1 5:2 胜其他

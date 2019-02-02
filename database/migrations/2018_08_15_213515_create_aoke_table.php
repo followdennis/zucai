@@ -17,6 +17,7 @@ class CreateAokeTable extends Migration
         Schema::create('aoke', function (Blueprint $table) {
             $table->increments('id');
             $table->string('num')->nullable()->comment('当天比赛编号');
+            $table->integer('match_id')->default(0)->comment('澳客网比赛编号id');
             $table->string('competition_name',30)->comment('比赛名称');
             $table->timestamp('match_time')->nullable()->comment('比赛时间');
             $table->string('host_team_name',30)->comment('主队名称');

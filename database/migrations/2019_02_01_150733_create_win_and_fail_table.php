@@ -18,7 +18,8 @@ class CreateWinAndFailTable extends Migration
          */
         Schema::create('win_and_fail', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('match_id')->default(0)->comment('比赛名称');
+            $table->integer('match_id')->default(0)->comment('比赛id');
+            $table->integer('aoke_id')->default(0)->comment('奥克表的主键id');
             $table->tinyInteger('give_score')->default(0)->comment('让球个数0,不让球');
             $table->tinyInteger('match_result')->default(0)->comment('比赛结果 3 胜 1 平 0 负');
             $table->float('rate',6,2)->default(0)->comment('赔率');

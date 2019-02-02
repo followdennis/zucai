@@ -18,6 +18,7 @@ class CreateTotalScoreTable extends Migration
          */
         Schema::create('total_score', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('aoke_id')->default(0)->comment('奥克表的主键id');
             $table->integer('match_id')->default(0)->comment('比赛id');
             /**
              * 进球数类型 0 1 2 3 4 5 6  大于6
