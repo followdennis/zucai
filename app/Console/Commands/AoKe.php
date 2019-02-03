@@ -90,17 +90,18 @@ class AoKe extends Command
             $datetime = date('Y-m-d H:i:s',$spec_time);//投注日期
 
             $date = date('Y-m-d',$time);
-
+            $range = '.cont';//这个字段非常必要
             $data = $match_dom->rules($rules)->query()->getData();
 
           foreach($data as $key => $item ){
               if(isset( $item['data_end']) && $item['data_end'] == 0){
-
                   //总数居统计
                   $this->total_num++;
+
+
                   if( count($item) < 16){
-                      $this->info('字段不全');
-                      Log::info("字段不全".date() .$item['match_code'] + $item['match_time']);
+                      $this->info('字段不全'.$item['match_code']);
+                      Log::info("字段不全".$spec_time .$item['match_code'] . $item['match_time']);
                   } else {
                         $item['match_time'] = str_replace('比赛时间:','',$item['match_time']);
                         $item['betting_date'] = $datetime;
@@ -184,9 +185,7 @@ class AoKe extends Command
                             }
 
                         }
-
                   }
-
               }
           }
         }
@@ -240,11 +239,11 @@ class AoKe extends Command
                 '.shenpf .fu .paim p','text'
             ],
             //让球
-            'give_score' => [
-                '.rangqiuspf .zhu .zhud span','text'
+            "give_score" => [
+                ".rangqiuspf .zhu .zhud>span","html"
             ],
             'give_score_win_rate' => [
-                '.rangqiuspf .zhu .peilv','text'
+                '.rangqiuspf .zhu .peilv','html'
             ],
             'give_score_draw_rate' => [
                 '.rangqiuspf  .ping .peilv','text'
