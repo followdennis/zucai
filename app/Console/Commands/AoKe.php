@@ -91,7 +91,11 @@ class AoKe extends Command
 
             $date = date('Y-m-d',$time);
             $range = '.cont';//这个字段非常必要
-            $data = $match_dom->rules($rules)->query()->getData();
+            $data = $match_dom->rules($rules)->query()->getData(function($item){
+                $item['host_team_rank'] = QueryList::html($item['host_team_rank'])->find('p')->eq(0)->text();
+                $item['guest_team_rank'] = QueryList::html($item['guest_team_rank'])->find('p')->eq(0)->text();
+                return $item;
+            });
 
           foreach($data as $key => $item ){
               if(isset( $item['data_end']) && $item['data_end'] == 0){
@@ -134,6 +138,9 @@ class AoKe extends Command
                         $half_res = QueryList::html($half_html)->rules($half_ground_rules)->query()->getData();
 
 
+
+
+
                         if(isset($item['host_team_rank']) && !preg_match('/-/',$item['host_team_rank'])){
                             $item['host_team_rank'] = str_replace(['[',']'],'',$item['host_team_rank']);
                         }else{
@@ -153,7 +160,6 @@ class AoKe extends Command
                         $comm_data['created_at'] = $create_time;
                         unset($comm_data['data_end']);
                         unset($comm_data['match_code']);
-
                         //插入主表数据
                         $aoke_id = \App\Models\Aoke::insertGetId($comm_data);
                         if( $aoke_id){
@@ -221,7 +227,7 @@ class AoKe extends Command
                 '.shenpf  .zhu .zhum','text'
             ],
             'host_team_rank' => [
-                '.shenpf .zhu .paim p','text'
+                '.shenpf .zhu .paim','html'
             ],
             'win_rate' => [
                 '.shenpf .zhu .peilv','text'
@@ -236,7 +242,7 @@ class AoKe extends Command
                 '.shenpf  .fu .zhum','text'
             ],
             'guest_team_rank' => [
-                '.shenpf .fu .paim p','text'
+                '.shenpf .fu .paim','html'
             ],
             //让球
             "give_score" => [

@@ -52,6 +52,9 @@ class AokeProcess extends Command
 
         $range= 'tr.trClass';
         $rules = [
+            'match_num' => [
+              'td:eq(0)','text'
+            ],
             'competition_name' => [
                 'td:eq(1)','text'
             ],
@@ -101,9 +104,71 @@ class AokeProcess extends Command
                 'td:eq(17)','text'
             ]
         ];
-        $res = $ql->range($range)->rules($rules)->query()->getData();
+        $resData = $ql->range($range)->rules($rules)->query()->getData(function($item){
+            preg_match('/\d+/',$item['match_id'],$id);
+            $item['match_id'] = isset($id[0]) ? $id[0] : 0;  //处理比赛id
+            preg_match('/\d+/',$item['match_num'],$num);
+            $item['match_num'] = isset($num[0]) ? $num[0] : 0;
 
-        print_r($res);
+            if( strlen($item['match_score']) > 3){
+                $score = explode('-',$item['match_score']);
+            }
 
+            if(empty($item['match_res'])){
+                $item['match_res'] = 5;//网站未更新比赛及俄国
+                $item['match_res_rate'] = 0;//未提供数据结果的比赛赔率设置为0
+            }
+            $item['host_score'] = isset($score[0]) ? $score[0] : 0;//主队进球数
+            $item['guest_score'] = isset($score[1]) ? $score[1] : 0; //客队进球数
+            return $item;
+        });
+
+        $max_match_info = \App\Models\Aoke::where(['status'=>2])->orderBy('id','desc')->select('id','num','match_time')->limit(1)->first();
+        foreach($resData as $key => $item){
+            //没有比分的比赛跳过
+            if( !preg_match("/\d+/",$item['match_score'])){
+                continue;
+            }
+
+            $year = date('Y',time());
+            $real_match_time = $year. '-' .$item['time'];
+            if( $max_match_info ){
+                if( strtotime($real_match_time) > strtotime($max_match_info->match_time)){
+                    //更新
+                    $this->updateMatchRes($item);
+                }elseif( strtotime($real_match_time) == strtotime($max_match_info->match_time) ){
+                    if( $item['match_num'] > substr($max_match_info->num,1)){
+                        //更新
+                        $this->updateMatchRes($item);
+                    }
+                    continue;
+                }
+            } else {
+                //直接更新
+                $this->updateMatchRes($item);
+            }
+
+        }
+    }
+    //更新数据
+    public function updateMatchRes($item){
+        if(empty($item)){
+            return false;
+        }
+        $res = \App\Models\Aoke::where(['status'=>0,'match_id' => $item['match_id']])->update([
+            'host_score'=>$item['host_score'],
+            'guest_score' => $item['guest_score'],
+            'total' => $item['total_score'],
+            'total_rate' => $item['total_score_rate'],
+            'status' => 2,
+            'score_rate' => $item['match_score_rate'], //比分赔率
+            'result' => $item['match_res'],//比赛结果 0 负 1 平 3 胜
+            'give_score_result' => $item['give_score_res'],
+        ]);
+        if( !$res ){
+            $this->info('更新数据失败，matchid'.$item['match_id']);
+        } else {
+            $this->info('更新成功，比赛id'.$item['match_id'].',比赛队伍，'.$item['host_team_name'].':'.$item['guest_team_name']);
+        }
     }
 }
