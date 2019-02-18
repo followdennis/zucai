@@ -59,7 +59,9 @@ class Caipiao163History extends Command
             if(strlen($item->detail_url) > 10){
 
                 $params = $this->getParams($item->detail_url);
-
+                if($params == false){
+                    continue;
+                }
                 $hostId = $params['hostId'];
                 $guestId = $params['guestId'];
                 $matchId = $params['matchId'];
@@ -94,6 +96,10 @@ class Caipiao163History extends Command
         $html = $response->getBody();
         $crawler = new Crawler();
         $crawler->addHtmlContent($html);
+        if($crawler->filter('.docBody  script')->count() <1){
+            $this->info('节点为空');
+            return false;
+        }
         $script = $crawler->filter('.docBody  script')->text();
         $input = $crawler->filter('#data_recCase')->filter('dd.list')->filter('input')
             ->extract(['value']); //获取联盟id
