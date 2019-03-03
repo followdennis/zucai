@@ -7,6 +7,7 @@ use App\Models\SourceWangyiCaipiao;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use QL\QueryList;
 use Symfony\Component\DomCrawler\Crawler;
 
 class TestController extends Controller
@@ -267,14 +268,55 @@ die;
         echo "test<br/>";
 
         $client = new Client();
-        $response = $client->request('get','http://bisai.caipiao.163.com/match/data.html?cache=1535184705081&modelId=data_recHis&matchId=2721965&league=110%2C577%2C109&field=10');
-        $response = $client->request('get','http://zx.caipiao.163.com/library/football/match.html?mId=1398732&hId=290&vId=216');
+//        $response = $client->request('get','http://bisai.caipiao.163.com/match/data.html?cache=1535184705081&modelId=data_recHis&matchId=2721965&league=110%2C577%2C109&field=10');
+//        $response = $client->request('get','http://zx.caipiao.163.com/library/football/match.html?mId=1398732&hId=290&vId=216');
 
 //        $response = $client->request('get','http://bisai.caipiao.163.com/match/data.html?cache='.time().)
         $url = '';
 
             echo microtime(true);
+            echo "变量解析";
+            echo "<hr>";
+            //有效cookie
+            $str1= "_ga=GA1.2.1495388222.1529303494; LastUrl=; FirstURL=www.okooo.com/; FirstOKURL=http%3A//www.okooo.com/jingcai/; First_Source=www.okooo.com; __utmz=56961525.1551359810.47.13.utmcsr=baidu|utmccn=(organic)|utmcmd=organic; Hm_lvt_5ffc07c2ca2eda4cc1c4d8e50804c94b=1550909400,1551359810,1551520677,1551577119; __utmc=56961525; PHPSESSID=2d054a26a48a12dfb494691a9e7f34ced48840d0; pm=; __utma=56961525.1495388222.1529303494.1551577119.1551577123.51; LStatus=N; LoginStr=%7B%22welcome%22%3A%22%u60A8%u597D%uFF0C%u6B22%u8FCE%u60A8%22%2C%22login%22%3A%22%u767B%u5F55%22%2C%22register%22%3A%22%u6CE8%u518C%22%2C%22TrustLoginArr%22%3A%7B%22alipay%22%3A%7B%22LoginCn%22%3A%22%u652F%u4ED8%u5B9D%22%7D%2C%22tenpay%22%3A%7B%22LoginCn%22%3A%22%u8D22%u4ED8%u901A%22%7D%2C%22qq%22%3A%7B%22LoginCn%22%3A%22QQ%u767B%u5F55%22%7D%2C%22weibo%22%3A%7B%22LoginCn%22%3A%22%u65B0%u6D6A%u5FAE%u535A%22%7D%2C%22renren%22%3A%7B%22LoginCn%22%3A%22%u4EBA%u4EBA%u7F51%22%7D%2C%22baidu%22%3A%7B%22LoginCn%22%3A%22%u767E%u5EA6%22%7D%2C%22weixin%22%3A%7B%22LoginCn%22%3A%22%u5FAE%u4FE1%u767B%u5F55%22%7D%2C%22snda%22%3A%7B%22LoginCn%22%3A%22%u76DB%u5927%u767B%u5F55%22%7D%7D%2C%22userlevel%22%3A%22%22%2C%22flog%22%3A%22hidden%22%2C%22UserInfo%22%3A%22%22%2C%22loginSession%22%3A%22___GlobalSession%22%7D; Hm_lpvt_5ffc07c2ca2eda4cc1c4d8e50804c94b=1551586270; __utmb=56961525.30.9.1551586271777";
+            //无效cookie
+            $str2 = "_ga=GA1.2.1495388222.1529303494; LastUrl=; FirstURL=www.okooo.com/; FirstOKURL=http%3A//www.okooo.com/jingcai/; First_Source=www.okooo.com; __utmz=56961525.1551359810.47.13.utmcsr=baidu|utmccn=(organic)|utmcmd=organic; Hm_lvt_5ffc07c2ca2eda4cc1c4d8e50804c94b=1550909400,1551359810,1551520677,1551577119; __utmc=56961525; PHPSESSID=2d054a26a48a12dfb494691a9e7f34ced48840d0; pm=; __utma=56961525.1495388222.1529303494.1551577119.1551577123.51; LStatus=N; LoginStr=%7B%22welcome%22%3A%22%u60A8%u597D%uFF0C%u6B22%u8FCE%u60A8%22%2C%22login%22%3A%22%u767B%u5F55%22%2C%22register%22%3A%22%u6CE8%u518C%22%2C%22TrustLoginArr%22%3A%7B%22alipay%22%3A%7B%22LoginCn%22%3A%22%u652F%u4ED8%u5B9D%22%7D%2C%22tenpay%22%3A%7B%22LoginCn%22%3A%22%u8D22%u4ED8%u901A%22%7D%2C%22qq%22%3A%7B%22LoginCn%22%3A%22QQ%u767B%u5F55%22%7D%2C%22weibo%22%3A%7B%22LoginCn%22%3A%22%u65B0%u6D6A%u5FAE%u535A%22%7D%2C%22renren%22%3A%7B%22LoginCn%22%3A%22%u4EBA%u4EBA%u7F51%22%7D%2C%22baidu%22%3A%7B%22LoginCn%22%3A%22%u767E%u5EA6%22%7D%2C%22weixin%22%3A%7B%22LoginCn%22%3A%22%u5FAE%u4FE1%u767B%u5F55%22%7D%2C%22snda%22%3A%7B%22LoginCn%22%3A%22%u76DB%u5927%u767B%u5F55%22%7D%7D%2C%22userlevel%22%3A%22%22%2C%22flog%22%3A%22hidden%22%2C%22UserInfo%22%3A%22%22%2C%22loginSession%22%3A%22___GlobalSession%22%7D; Hm_lpvt_5ffc07c2ca2eda4cc1c4d8e50804c94b=1551586202; __utmb=56961525.23.9.1551586203771";
+
+            $res1 = $this->parseParams($str1);
+            $res2 = $this->parseParams($str2);
+            echo "<pre>";
+            print_r($res1);
+            print_r($res2);
+
+            foreach($res1 as $k =>$v){
+
+                if($v != $res2[$k]){
+                    echo "不相等的项";
+                    echo "<br/>" . $k ."<br/>";
+                    echo $v;
+                    echo "<br/>";
+                    echo $res2[$k];
+
+                }
+            }
+            echo "<br/>";
+        $url = "http://www.okooo.com/soccer/match/1029611/history/";
+          $sql = QueryList::get($url)->find('*')->html();
+        $encode = mb_detect_encoding($sql, array("ASCII",'UTF-8',"GB2312","GBK",'BIG5'));
+        echo $encode;
+        print_r(mb_convert_encoding($sql, 'UTF-8', $encode));
+
 //        $html = $response->getBody();
 //        echo $html;
+    }
+
+    public function parseParams($str){
+        $parse_arr = explode(";",$str);
+        $res = [];
+        foreach($parse_arr as $key => $v){
+            $item = explode("=",$v);
+            $res[$item[0]] = $item[1];
+        }
+        return $res;
     }
 }
