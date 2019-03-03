@@ -19,6 +19,7 @@ class CreateAokeHistoryHostScoreTable extends Migration
             $table->tinyInteger('score')->default(0)->comment('进球数据');
             $table->timestamp('score_time')->nullable()->comment('进球的比赛时间');
             $table->timestamps();
+
         });
     }
 

@@ -56,6 +56,8 @@ class AoKe extends Command
     {
         //
         $this->info('澳客网');
+        
+        die;
         $this->crawler();
         $this->info('总计:'.$this->total_num);
         $this->info('成功:'.$this->success_num . '条');
@@ -92,8 +94,10 @@ class AoKe extends Command
             $date = date('Y-m-d',$time);
             $range = '.cont';//这个字段非常必要
             $data = $match_dom->rules($rules)->query()->getData(function($item){
-                $item['host_team_rank'] = QueryList::html($item['host_team_rank'])->find('p')->eq(0)->text();
-                $item['guest_team_rank'] = QueryList::html($item['guest_team_rank'])->find('p')->eq(0)->text();
+                $host_rank =  QueryList::html($item['host_team_rank'])->find('p')->eq(0)->text();
+                $guest_rank = QueryList::html($item['guest_team_rank'])->find('p')->eq(0)->text();
+                $item['host_team_rank'] = $host_rank ? $host_rank : 0;
+                $item['guest_team_rank'] = $guest_rank ? $guest_rank : 0;
                 return $item;
             });
 
