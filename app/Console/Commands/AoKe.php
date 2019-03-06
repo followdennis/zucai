@@ -57,7 +57,7 @@ class AoKe extends Command
         //
         $this->info('澳客网');
         
-        die;
+
         $this->crawler();
         $this->info('总计:'.$this->total_num);
         $this->info('成功:'.$this->success_num . '条');
