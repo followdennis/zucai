@@ -56,8 +56,7 @@ class AoKe extends Command
     {
         //
         $this->info('澳客网');
-        
-        die;
+
         $this->crawler();
         $this->info('总计:'.$this->total_num);
         $this->info('成功:'.$this->success_num . '条');
@@ -145,12 +144,12 @@ class AoKe extends Command
 
 
 
-                        if(isset($item['host_team_rank']) && !preg_match('/-/',$item['host_team_rank'])){
+                        if(isset($item['host_team_rank']) && !preg_match('/-/',$item['host_team_rank']) && preg_match('/\d+/',$item['host_team_rank'])){
                             $item['host_team_rank'] = str_replace(['[',']'],'',$item['host_team_rank']);
                         }else{
                             $item['host_team_rank'] = 0;
                         }
-                        if( isset($item['guest_team_rank']) && !preg_match('/-/',$item['guest_team_rank'])){
+                        if( isset($item['guest_team_rank']) && !preg_match('/-/',$item['guest_team_rank']) &&  preg_match('/\d+/',$item['guest_team_rank'])){
                             $item['guest_team_rank'] = str_replace(['[',']'],'',$item['guest_team_rank']);
                         }else {
                             $item['guest_team_rank'] = 0;
