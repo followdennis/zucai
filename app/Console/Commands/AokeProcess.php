@@ -158,7 +158,7 @@ class AokeProcess extends Command
         $res = \App\Models\Aoke::where(['status'=>0,'match_id' => $item['match_id']])->update([
             'host_score'=>$item['host_score'],
             'guest_score' => $item['guest_score'],
-            'total' => $item['total_score'],
+            'total' => str_replace('+','',$item['total_score']),
             'total_rate' => $item['total_score_rate'],
             'status' => 2,
             'score_rate' => $item['match_score_rate'], //比分赔率
